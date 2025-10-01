@@ -1,6 +1,6 @@
 ---
 title: my viewpoint of data-driven and rule-based simulation
-date: 2025-09-22
+published: 2025-09-22
 tags: [simulation,robotics,杂谈]
 draft: false
 ---

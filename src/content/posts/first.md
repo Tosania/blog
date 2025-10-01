@@ -1,6 +1,6 @@
 ---
 title: a new start
-date: 2025-09-21
+published: 2025-09-21
 tags: [杂谈]
 ---
 
