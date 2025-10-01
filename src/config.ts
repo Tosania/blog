@@ -70,7 +70,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "blog2",
 			icon: "fa7-solid:blog",
-			url: "https://tosania.github.io",
+			url: "https://tosania2.github.io",
 		},
 		{
 			name: "homepage",
