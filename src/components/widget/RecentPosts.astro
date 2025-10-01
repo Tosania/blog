@@ -1,0 +1,57 @@
+---
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
+import ButtonLink from "../control/ButtonLink.astro";
+import WidgetLayout from "./WidgetLayout.astro";
+import { getCollection } from "astro:content";
+
+interface Props {
+  class?: string;
+  style?: string;
+  /** 显示条数，默认 5 */
+  count?: number;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+const COUNT = Astro.props.count ?? 5;
+
+// 读取 posts 集合，过滤草稿，按发布时间倒序
+const recent = (await getCollection("posts", ({ data }) => !data.draft))
+  .sort((a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime())
+  .slice(0, COUNT);
+
+// 折叠设置（与 Categories 风格保持一致）
+const COLLAPSED_HEIGHT = "7.5rem";
+const COLLAPSE_THRESHOLD = 5;
+const isCollapsed = recent.length >= COLLAPSE_THRESHOLD;
+
+// 日期徽标：尽量短小（MM-DD）
+const fmt = new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" });
+
+// 如果你的 i18n 里暂时没有 recentPosts 这个 key，会回退成英文标题
+const title = (i18n(I18nKey.recentPosts) as string) || "Recent Articles";
+---
+
+<WidgetLayout
+  name={title}
+  id="recent-posts"
+  isCollapsed={isCollapsed}
+  collapsedHeight={COLLAPSED_HEIGHT}
+  class={className}
+  style={style}
+>
+  {recent.length === 0 ? (
+    <p class="text-sm text-zinc-500 dark:text-zinc-400 px-1">还没有发布的文章。</p>
+  ) : (
+    recent.map((p) => (
+      <ButtonLink
+        url={`/posts/${p.slug}/`}
+        badge={p.data?.published ? fmt.format(new Date(p.data.published)) : undefined}
+        label={`Read: ${p.data?.title ?? p.slug}`}
+      >
+        {p.data?.title ?? p.slug}
+      </ButtonLink>
+    ))
+  )}
+</WidgetLayout>

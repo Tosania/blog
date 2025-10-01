@@ -3,6 +3,7 @@ import type { MarkdownHeading } from "astro";
 import Categories from "./Categories.astro";
 import Profile from "./Profile.astro";
 import Tag from "./Tags.astro";
+import RecentPosts from "./RecentPosts.astro";
 
 interface Props {
 	class?: string;
@@ -12,11 +13,21 @@ interface Props {
 const className = Astro.props.class;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
-    <div class="flex flex-col w-full gap-4 mb-4">
-        <Profile></Profile>
+  <div class="flex flex-col w-full gap-4 mb-4">
+    <Profile />
+  </div>
+
+  <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4">
+    <Categories class="onload-animation" style="animation-delay: 150ms" />
+    <Tag class="onload-animation" style="animation-delay: 200ms" />
+
+    <!-- 给 RecentPosts 外面包一层带卡片样式的容器 -->
+    <div
+      class="onload-animation rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60
+             bg-white/80 dark:bg-zinc-900/50 shadow-sm"
+      style="animation-delay: 250ms; backdrop-filter: blur(6px)"
+    >
+      <RecentPosts />
     </div>
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4">
-        <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
-        <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
-    </div>
+  </div>
 </div>
