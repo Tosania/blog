@@ -99,7 +99,7 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 // src/config.ts（示例片段）
 
 export const giscus = {
-  repo: "Tosania/blog/yourrepo",
+  repo: "Tosania/blog",
   repoId: "R_kgDOP6OfSw",
   category: "General",
   categoryId: "DIC_kwDOP6OfS84CwJUi",

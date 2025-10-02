@@ -142,5 +142,83 @@ const jsonLd = {
             </div>}
         </a>
     </div>
+    <script is:inline>
+  // 1) 当前是否暗色：默认基于 <html class="dark">
+  function isDark() {
+    return document.documentElement.classList.contains('dark');
+  }
 
+  // 2) 计算要发给 Giscus 的主题名
+  //    明暗模式时直接用 'dark' / 'light' 最稳
+  function currentGiscusTheme() {
+    return isDark() ? 'dark' : 'light';
+  }
+
+  // 3) 设置 Giscus 主题（向 iframe 发送 postMessage）
+  function setGiscusTheme(theme) {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return false; // 可能还没渲染出来
+    iframe.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme } } },
+      'https://giscus.app'
+    );
+    return true;
+  }
+
+  // 4) 等待 Giscus iframe 出现后，同步一次（兼容懒加载）
+  function syncWhenIframeReady() {
+    // 先尝试一次
+    if (setGiscusTheme(currentGiscusTheme())) return;
+
+    // 观察 DOM，直到 iframe 出现
+    const mo = new MutationObserver(() => {
+      if (setGiscusTheme(currentGiscusTheme())) {
+        mo.disconnect();
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    // 保险起见再加一个轮询（某些情况下更快）
+    const it = setInterval(() => {
+      if (setGiscusTheme(currentGiscusTheme())) {
+        clearInterval(it);
+      }
+    }, 300);
+    // 10 秒超时停止轮询（防止意外占用）
+    setTimeout(() => clearInterval(it), 10000);
+  }
+
+  // 5) 主题变化时，通知 Giscus
+  function watchThemeChanges() {
+    // a) 监听 <html> 的 class 变化（多数主题切换就是改 class）
+    const htmlObs = new MutationObserver(() => {
+      setGiscusTheme(currentGiscusTheme());
+    });
+    htmlObs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    // b) 监听系统配色变化（跟随系统时生效）
+    try {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener('change', () => {
+        setGiscusTheme(currentGiscusTheme());
+      });
+    } catch {}
+
+    // c) 可选：如果你在 localStorage 里存主题，也可以监听 storage 事件
+    window.addEventListener('storage', (e) => {
+      if (e.key && e.key.toLowerCase().includes('theme')) {
+        setGiscusTheme(currentGiscusTheme());
+      }
+    });
+
+    // d) 可选：如果你的主题切换会派发自定义事件，可在此监听
+    window.addEventListener('colorschemechange', () => {
+      setGiscusTheme(currentGiscusTheme());
+    });
+  }
+
+  // 6) 页面加载后初始化
+  syncWhenIframeReady();
+  watchThemeChanges();
+</script>
 </MainGridLayout>
