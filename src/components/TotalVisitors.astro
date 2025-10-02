@@ -1,31 +1,29 @@
----
-/* 全站总访客数：
- * 同一浏览器仅第一次访问算 1（localStorage 去重），其后只读取不叠加。
- * 用法：在页脚“Powered by Astro & Fuwari”后插入 <TotalVisitors />。
- */
----
 <span class="total-visitors">—</span>
 <script is:inline>
   (() => {
-    // is:inline 确保脚本不会被 hoist 到 <head>；就地拿到前一个兄弟元素
     const s = document.currentScript;
     if (!(s instanceof HTMLScriptElement)) return;
     const el = s.previousElementSibling;
     if (!(el instanceof HTMLElement)) return;
 
-    const key = 'fuwari:visited';
-    const first = !localStorage.getItem(key);
-
-    // 若站点是“纯静态托管”（GitHub Pages 等），把 API 改成你的函数完整 URL
     const API = 'https://blog-count-api.vercel.app/api/counter';
 
-    const url = first ? API : `${API}?type=site`;
-    const opt = first
-      ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'site' }) }
-      : {};
+    // 同一标签页生命周期内只触发一次 POST；刷新后会再 +1
+    const guardKey = '__totalVisitorsPosted';
+    const alreadyPosted = !!window[guardKey];
 
-    // 标记“已记过访客”；如果你希望在 POST 失败时不标记，可把这一行移到 fetch 成功后
-    if (first) localStorage.setItem(key, '1');
+    // 若已在本页生命周期内计过，则只读取；否则先 POST 自增
+    const url = alreadyPosted ? `${API}?type=site` : API;
+    const opt = alreadyPosted
+      ? {}
+      : {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ type: 'site' })
+        };
+
+    // 立刻标记，避免组件重复挂载导致多次 POST
+    if (!alreadyPosted) window[guardKey] = true;
 
     fetch(url, opt)
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })

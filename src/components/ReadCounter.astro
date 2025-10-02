@@ -7,25 +7,28 @@ const path = Astro.props.path ?? Astro.url.pathname ?? '/';
 <span class="read-count" data-path={path}>—</span>
 <script is:inline>
   (() => {
-    // 关键：is:inline 确保脚本不会被 hoist 到 <head>；就地拿到兄弟元素
     const s = document.currentScript;
     if (!(s instanceof HTMLScriptElement)) return;
     const el = s.previousElementSibling;
     if (!(el instanceof HTMLElement)) return;
 
     const path = el.getAttribute('data-path') || location.pathname;
-    const key = 'fuwari:read:' + path;
-    const first = !localStorage.getItem(key);
-
-    // 注意：如果你的站是“纯静态托管”（GitHub Pages 等），把 API 改成完整函数地址
     const API = 'https://blog-count-api.vercel.app/api/counter';
-    const url = first ? API : `${API}?type=post&path=${encodeURIComponent(path)}`;
-    const opt = first
+
+    // 同一标签页生命周期内防抖：避免同一路径在本次打开期间被重复计数
+    // 刷新会清空这段内存，因此刷新会再次 +1
+    const guard = (window.__readCounterPosted ||= new Set());
+    const alreadyPosted = guard.has(path);
+
+    const url = alreadyPosted ? `${API}?type=post&path=${encodeURIComponent(path)}` : API;
+    const opt = alreadyPosted
       ? { method: 'POST', headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ type: 'post', path }) }
-      : {};
+      : { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ type: 'post', path }) };
 
-    if (first) localStorage.setItem(key, '1');
+    // 第一次进入本页（在当前标签页生命周期里）做一次标记
+    if (!alreadyPosted) guard.add(path);
 
     fetch(url, opt)
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
