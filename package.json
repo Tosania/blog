@@ -21,7 +21,6 @@
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/svelte": "7.2.0",
     "@astrojs/tailwind": "^6.0.2",
-    "@astrojs/vercel": "^8.2.8",
     "@expressive-code/core": "^0.41.3",
     "@expressive-code/plugin-collapsible-sections": "^0.41.3",
     "@expressive-code/plugin-line-numbers": "^0.41.3",
@@ -64,6 +63,7 @@
   },
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.4",
+    "@astrojs/vercel": "^8.2.8",
     "@biomejs/biome": "2.2.4",
     "@iconify-json/fa7-solid": "^1.2.1",
     "@iconify-json/simple-icons": "^1.2.53",
@@ -76,5 +76,4 @@
     "postcss-nesting": "^13.0.2"
   },
   "packageManager": "pnpm@9.14.4"
-  
 }

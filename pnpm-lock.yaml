@@ -23,9 +23,6 @@ importers:
       '@astrojs/tailwind':
         specifier: ^6.0.2
         version: 6.0.2(astro@5.13.10(@types/node@24.5.2)(@vercel/functions@2.2.13)(jiti@1.21.7)(lightningcss@1.29.3)(rollup@2.79.2)(sass@1.80.4)(stylus@0.64.0)(terser@5.43.1)(typescript@5.9.2)(yaml@2.7.0))(tailwindcss@3.4.17)
-      '@astrojs/vercel':
-        specifier: ^8.2.8
-        version: 8.2.8(astro@5.13.10(@types/node@24.5.2)(@vercel/functions@2.2.13)(jiti@1.21.7)(lightningcss@1.29.3)(rollup@2.79.2)(sass@1.80.4)(stylus@0.64.0)(terser@5.43.1)(typescript@5.9.2)(yaml@2.7.0))(rollup@2.79.2)(svelte@5.39.6)
       '@expressive-code/core':
         specifier: ^0.41.3
         version: 0.41.3
@@ -147,6 +144,9 @@ importers:
       '@astrojs/ts-plugin':
         specifier: ^1.10.4
         version: 1.10.4
+      '@astrojs/vercel':
+        specifier: ^8.2.8
+        version: 8.2.8(astro@5.13.10(@types/node@24.5.2)(@vercel/functions@2.2.13)(jiti@1.21.7)(lightningcss@1.29.3)(rollup@2.79.2)(sass@1.80.4)(stylus@0.64.0)(terser@5.43.1)(typescript@5.9.2)(yaml@2.7.0))(rollup@2.79.2)(svelte@5.39.6)
       '@biomejs/biome':
         specifier: 2.2.4
         version: 2.2.4

@@ -1,33 +1,41 @@
 ---
-/** 文章阅读数组件：首次阅读计数；刷新仅读取不自增。
- *  使用方法：<ReadCounter path={Astro.url.pathname} />
- *  如果不传 path，会自动取 location.pathname（但推荐传）
+/** 最稳健的阅读数组件：首次阅读 POST 自增，其后只 GET。
+ *  用法：<ReadCounter path={Astro.url.pathname} />
  */
 const path = Astro.props.path ?? Astro.url.pathname ?? '/';
-const spanId = `read-counter-${btoa(encodeURIComponent(path)).replace(/=+$/,'')}`;
 ---
-<span id={spanId} class="read-count" data-path={path}>—</span>
-<script>
+<span class="read-count" data-path={path}>—</span>
+<script is:inline>
   (() => {
-    const el = document.getElementById({spanId: JSON.stringify(spanId)}.spanId);
-    if (!el) return;
+    // 关键：is:inline 确保脚本不会被 hoist 到 <head>；就地拿到兄弟元素
+    const s = document.currentScript;
+    if (!(s instanceof HTMLScriptElement)) return;
+    const el = s.previousElementSibling;
+    if (!(el instanceof HTMLElement)) return;
 
     const path = el.getAttribute('data-path') || location.pathname;
     const key = 'fuwari:read:' + path;
-    const firstRead = !localStorage.getItem(key);
+    const first = !localStorage.getItem(key);
 
-    const url = firstRead ? '/api/counter' : `/api/counter?type=post&path=${encodeURIComponent(path)}`;
-    const opt = firstRead
-      ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'post', path }) }
+    // 注意：如果你的站是“纯静态托管”（GitHub Pages 等），把 API 改成完整函数地址
+    const API = 'https://blog-count-api.vercel.app/api/counter';
+    const url = first ? API : `${API}?type=post&path=${encodeURIComponent(path)}`;
+    const opt = first
+      ? { method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ type: 'post', path }) }
       : {};
-    if (firstRead) localStorage.setItem(key, '1');
+
+    if (first) localStorage.setItem(key, '1');
 
     fetch(url, opt)
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(d => {
         const n = Number(d?.count ?? d ?? 0);
-        el.textContent = new Intl.NumberFormat().format(n);
+        el.textContent = new Intl.NumberFormat().format(Number.isFinite(n) ? n : 0);
       })
-      .catch(() => { el.textContent = 'N/A'; });
+      .catch(err => {
+        console.error('[ReadCounter]', err);
+        el.textContent = 'N/A';
+      });
   })();
 </script>

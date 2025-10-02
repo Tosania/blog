@@ -1,22 +1,41 @@
 ---
-/* 无 props，页面一加载就显示全站访客数。
-   规则：同一浏览器仅第一次访问算“访客”，后续只读取不叠加。*/
+/* 全站总访客数：
+ * 同一浏览器仅第一次访问算 1（localStorage 去重），其后只读取不叠加。
+ * 用法：在页脚“Powered by Astro & Fuwari”后插入 <TotalVisitors />。
+ */
 ---
 <span class="total-visitors">—</span>
-<script>
-  (function () {
-    const el = document.currentScript.previousElementSibling;
-    const already = localStorage.getItem('fuwari:visited');
-    const doPost = !already;
-    const url = doPost ? '/api/counter' : '/api/counter?type=site';
-    const opt = doPost
+<script is:inline>
+  (() => {
+    // is:inline 确保脚本不会被 hoist 到 <head>；就地拿到前一个兄弟元素
+    const s = document.currentScript;
+    if (!(s instanceof HTMLScriptElement)) return;
+    const el = s.previousElementSibling;
+    if (!(el instanceof HTMLElement)) return;
+
+    const key = 'fuwari:visited';
+    const first = !localStorage.getItem(key);
+
+    // 若站点是“纯静态托管”（GitHub Pages 等），把 API 改成你的函数完整 URL
+    const API = 'https://blog-count-api.vercel.app/api/counter';
+
+    const url = first ? API : `${API}?type=site`;
+    const opt = first
       ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'site' }) }
       : {};
-    if (doPost) localStorage.setItem('fuwari:visited', '1');
+
+    // 标记“已记过访客”；如果你希望在 POST 失败时不标记，可把这一行移到 fetch 成功后
+    if (first) localStorage.setItem(key, '1');
 
     fetch(url, opt)
-      .then(r => r.json())
-      .then(d => { el.textContent = new Intl.NumberFormat().format(d.count || 0); })
-      .catch(() => { el.textContent = 'N/A'; });
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => {
+        const n = Number(d?.count ?? d ?? 0);
+        el.textContent = new Intl.NumberFormat().format(Number.isFinite(n) ? n : 0);
+      })
+      .catch(err => {
+        console.error('[TotalVisitors]', err);
+        el.textContent = 'N/A';
+      });
   })();
 </script>
