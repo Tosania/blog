@@ -96,3 +96,14 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
 };
+// src/config.ts（示例片段）
+
+export const giscus = {
+  repo: "Tosania/blog/yourrepo",
+  repoId: "R_kgDOP6OfSw",
+  category: "General",
+  categoryId: "DIC_kwDOP6OfS84CwJUi",
+  mapping: "pathname",
+  lang: "zh-CN",
+  theme: "preferred_color_scheme", // 简单好用
+} as const;

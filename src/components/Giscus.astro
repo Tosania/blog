@@ -1,0 +1,42 @@
+---
+// src/components/Giscus.astro
+interface Props {
+  repo: string
+  repoId: string
+  category: string
+  categoryId: string
+  mapping?: string
+  lang?: string
+  theme?: string
+}
+
+const {
+  repo,
+  repoId,
+  category,
+  categoryId,
+  mapping = 'pathname',
+  lang = 'zh-CN',
+  theme = 'preferred_color_scheme', // 自动跟随系统浅/深色
+} = Astro.props;
+---
+
+<div class="mt-12">
+  <script
+    src="https://giscus.app/client.js"
+    data-repo={repo}
+    data-repo-id={repoId}
+    data-category={category}
+    data-category-id={categoryId}
+    data-mapping={mapping}
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme={theme}
+    data-lang={lang}
+    crossorigin="anonymous"
+    async
+  ></script>
+  <noscript>请启用 JavaScript 以查看评论。</noscript>
+</div>

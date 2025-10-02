@@ -13,6 +13,8 @@ import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import Giscus from "@/components/Giscus.astro";
+import { giscus } from "@/config"; // 你在 config.ts 定义的参数
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -107,7 +109,15 @@ const jsonLd = {
             </Markdown>
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
-
+            {/* comments */}
+            {/* 可选开关：若某篇 frontmatter 写 comments: false，就不显示评论 */}
+            {entry.data.comments !== false && (
+              <div class="onload-animation mt-8">
+                <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>
+                {/* 你的 Giscus 参数来自 src/config.ts 的 giscus 导出 */}
+                <Giscus {...giscus} />
+              </div>
+            )}
         </div>
     </div>
 
