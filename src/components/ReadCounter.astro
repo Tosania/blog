@@ -1,0 +1,33 @@
+---
+/** 文章阅读数组件：首次阅读计数；刷新仅读取不自增。
+ *  使用方法：<ReadCounter path={Astro.url.pathname} />
+ *  如果不传 path，会自动取 location.pathname（但推荐传）
+ */
+const path = Astro.props.path ?? Astro.url.pathname ?? '/';
+const spanId = `read-counter-${btoa(encodeURIComponent(path)).replace(/=+$/,'')}`;
+---
+<span id={spanId} class="read-count" data-path={path}>—</span>
+<script>
+  (() => {
+    const el = document.getElementById({spanId: JSON.stringify(spanId)}.spanId);
+    if (!el) return;
+
+    const path = el.getAttribute('data-path') || location.pathname;
+    const key = 'fuwari:read:' + path;
+    const firstRead = !localStorage.getItem(key);
+
+    const url = firstRead ? '/api/counter' : `/api/counter?type=post&path=${encodeURIComponent(path)}`;
+    const opt = firstRead
+      ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'post', path }) }
+      : {};
+    if (firstRead) localStorage.setItem(key, '1');
+
+    fetch(url, opt)
+      .then(r => r.json())
+      .then(d => {
+        const n = Number(d?.count ?? d ?? 0);
+        el.textContent = new Intl.NumberFormat().format(n);
+      })
+      .catch(() => { el.textContent = 'N/A'; });
+  })();
+</script>

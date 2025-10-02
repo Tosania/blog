@@ -1,0 +1,22 @@
+---
+/* 无 props，页面一加载就显示全站访客数。
+   规则：同一浏览器仅第一次访问算“访客”，后续只读取不叠加。*/
+---
+<span class="total-visitors">—</span>
+<script>
+  (function () {
+    const el = document.currentScript.previousElementSibling;
+    const already = localStorage.getItem('fuwari:visited');
+    const doPost = !already;
+    const url = doPost ? '/api/counter' : '/api/counter?type=site';
+    const opt = doPost
+      ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'site' }) }
+      : {};
+    if (doPost) localStorage.setItem('fuwari:visited', '1');
+
+    fetch(url, opt)
+      .then(r => r.json())
+      .then(d => { el.textContent = new Intl.NumberFormat().format(d.count || 0); })
+      .catch(() => { el.textContent = 'N/A'; });
+  })();
+</script>

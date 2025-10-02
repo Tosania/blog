@@ -2,7 +2,7 @@
 
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
-
+import TotalVisitors from "../components/TotalVisitors.astro";
 const currentYear = new Date().getFullYear();
 ---
 
@@ -17,5 +17,6 @@ const currentYear = new Date().getFullYear();
         Powered by
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
+        · 总访客数：<TotalVisitors />
     </div>
 </div>

@@ -15,7 +15,7 @@ import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 import Giscus from "@/components/Giscus.astro";
 import { giscus } from "@/config"; // 你在 config.ts 定义的参数
-
+import ReadCounter from "@/components/ReadCounter.astro";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 	return blogEntries.map((entry) => ({
@@ -67,6 +67,15 @@ const jsonLd = {
                     </div>
                     <div class="text-sm">
                         {remarkPluginFrontmatter.minutes} {" " + i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
+                    </div>
+                </div>
+                 <!-- 阅读数 -->
+                <div class="flex flex-row items-center">
+                    <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
+                    <Icon name="material-symbols:visibility-rounded"></Icon>
+                    </div>
+                    <div class="text-sm">
+                    <ReadCounter path={Astro.url.pathname} /> 次阅读
                     </div>
                 </div>
             </div>
