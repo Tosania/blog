@@ -22,7 +22,7 @@ export const siteConfig: SiteConfig = {
 		credit: {
 			enable: true, // Display the credit text of the banner image
 			text: "hexo", // Credit text to be displayed
-			url: "https://tosaniat.github.io/", // (Optional) URL link to the original artwork or artist's page
+			url: "https://tosania.github.io/", // (Optional) URL link to the original artwork or artist's page
 		},
 	},
 	toc: {
