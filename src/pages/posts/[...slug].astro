@@ -9,13 +9,13 @@ import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { licenseConfig } from "src/config";
+import Giscus from "@/components/Giscus.astro";
+import ReadCounter from "@/components/ReadCounter.astro";
+import { giscus } from "@/config"; // 你在 config.ts 定义的参数
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
-import Giscus from "@/components/Giscus.astro";
-import { giscus } from "@/config"; // 你在 config.ts 定义的参数
-import ReadCounter from "@/components/ReadCounter.astro";
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
 	return blogEntries.map((entry) => ({
@@ -117,8 +117,7 @@ const jsonLd = {
                 <Content />
             </Markdown>
 
-            {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
-            {/* comments */}
+             {/* comments */}
             {/* 可选开关：若某篇 frontmatter 写 comments: false，就不显示评论 */}
             {entry.data.comments !== false && (
               <div class="onload-animation mt-8">

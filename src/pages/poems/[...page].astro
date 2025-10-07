@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Pagination from "@/components/control/Pagination.astro";
+import { PAGE_SIZE } from "@/constants/constants";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const allPoems = await getCollection("poems");
+	allPoems.sort(
+		(a, b) =>
+			new Date(b.data.published).getTime() -
+			new Date(a.data.published).getTime(),
+	);
+	return paginate(allPoems, { pageSize: PAGE_SIZE });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+
+<MainGridLayout title="诗词集" description="本站精选诗词" lang="zh">
+  <div class="grid gap-4">
+    {page.data.map((p) => (
+      <a href={`/poems/${p.slug}`} class="no-underline">
+        <div class="btn-card rounded-2xl p-4 hover:shadow">
+          <div class="font-bold text-lg">{p.data.title}</div>
+          <div class="opacity-70 mt-1">
+            {p.data.author}{p.data.dynasty ? ` · ${p.data.dynasty}` : ""}{p.data.lang ? ` · ${p.data.lang}` : ""}
+          </div>
+          {p.data.description && <div class="mt-2">{p.data.description}</div>}
+        </div>
+      </a>
+    ))}
+  </div>
+  <Pagination class="mx-auto onload-animation mt-6" page={page} />
+</MainGridLayout>

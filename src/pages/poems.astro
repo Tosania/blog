@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+// poems.astro
+const poems = (await getCollection("poems")).filter((p) => !p.data.draft);
+
+poems.sort(
+	(a, b) =>
+		new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
+);
+const todayIndex = poems.length
+	? new Date()
+			.toISOString()
+			.slice(0, 10)
+			.split("-")
+			.reduce((acc, n) => acc + Number(n), 0) % poems.length
+	: 0;
+const todaysPoem = poems[todayIndex];
+const { Content } = todaysPoem ? await todaysPoem.render() : { Content: null };
+---
+
+<MainGridLayout title="诗词集" description="本站精选诗词" lang="zh">
+  {todaysPoem && (
+    <section class="card-base rounded-2xl border p-5 mb-10">
+      <div class="text-sm opacity-70 mb-2">✨ 今日诗句</div>
+      <a href={`/poems/${todaysPoem.slug}/`} class="block no-underline">
+        <h2 class="text-xl font-semibold">{todaysPoem.data.title}</h2>
+        <p class="opacity-70 mt-1">{todaysPoem.data.author}</p>
+        <article class="mt-3 prose dark:prose-invert">
+          <Content />
+        </article>
+      </a>
+    </section>
+  )}
+
+  <ul class="space-y-4">
+    {poems.map((p) => (
+      <li class="card-base rounded-2xl border p-5 hover:shadow-sm transition">
+        <a href={`/poems/${p.slug}/`} class="no-underline">
+          <h3 class="text-lg font-semibold">📖 {p.data.title}</h3>
+          <p class="opacity-70 mt-1">
+            {p.data.author}{p.data.dynasty ? ` · ${p.data.dynasty}` : ""}{p.data.lang ? ` · ${p.data.lang}` : ""}
+          </p>
+          {p.data.description && <p class="mt-2">{p.data.description}</p>}
+        </a>
+      </li>
+    ))}
+  </ul>
+</MainGridLayout>

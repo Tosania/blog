@@ -23,7 +23,28 @@ const postsCollection = defineCollection({
 const specCollection = defineCollection({
 	schema: z.object({}),
 });
+const poems = defineCollection({
+	type: "content",
+	schema: z.object({
+		title: z.string(),
+		author: z.string().default("佚名"),
+		dynasty: z.string().optional(),
+		lang: z.string().default("zh"),
+		tags: z.array(z.string()).default([]),
+		description: z.string().optional(),
+		image: z.string().optional(),
+		category: z.string().optional(),
+
+		// ✅ 关键：用 coerce.date 接受字符串或 Date，统一成 Date
+		published: z.coerce.date(), // 发表日期
+		updated: z.coerce.date().optional(),
+		draft: z.boolean().default(false),
+		comments: z.boolean().optional(),
+	}),
+});
+
 export const collections = {
+	poems: poems,
 	posts: postsCollection,
 	spec: specCollection,
 };

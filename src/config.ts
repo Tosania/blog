@@ -29,12 +29,14 @@ export const siteConfig: SiteConfig = {
 		enable: true, // Display the table of contents on the right side of the post
 		depth: 3, // Maximum heading depth to show in the table, from 1 to 3
 	},
-	favicon: [{
-		// Leave this array empty to use the default favicon
-		   src: "/favicon/favicon.jpg",    // Path of the favicon, relative to the /public directory
-		   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-		   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
-	}],
+	favicon: [
+		{
+			// Leave this array empty to use the default favicon
+			src: "/favicon/favicon.jpg", // Path of the favicon, relative to the /public directory
+			theme: "light", // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
+			sizes: "32x32", // (Optional) Size of the favicon, set only if you have favicons of different sizes
+		},
+	],
 };
 
 export const navBarConfig: NavBarConfig = {
@@ -42,6 +44,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		LinkPreset.About,
+		{ name: "poems", url: "/poems/" },
 		{
 			name: "GitHub",
 			url: "https://github.com/tosania", // Internal links should not include the base path, as it is automatically added
@@ -99,11 +102,11 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 // src/config.ts（示例片段）
 
 export const giscus = {
-  repo: "Tosania/blog",
-  repoId: "R_kgDOP6OfSw",
-  category: "General",
-  categoryId: "DIC_kwDOP6OfS84CwJUi",
-  mapping: "pathname",
-  lang: "zh-CN",
-  theme: "preferred_color_scheme", // 简单好用
+	repo: "Tosania/blog",
+	repoId: "R_kgDOP6OfSw",
+	category: "General",
+	categoryId: "DIC_kwDOP6OfS84CwJUi",
+	mapping: "pathname",
+	lang: "zh-CN",
+	theme: "preferred_color_scheme", // 简单好用
 } as const;
