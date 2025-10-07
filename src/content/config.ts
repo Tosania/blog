@@ -34,7 +34,7 @@ const poems = defineCollection({
 		description: z.string().optional(),
 		image: z.string().optional(),
 		category: z.string().optional(),
-
+		creationText: z.string().optional(),
 		// ✅ 关键：用 coerce.date 接受字符串或 Date，统一成 Date
 		published: z.coerce.date(), // 发表日期
 		updated: z.coerce.date().optional(),

@@ -1,15 +1,16 @@
 ---
-title: 静夜思
-author: 李白
-dynasty: 唐
+title: 十六字令三首
+author: 毛泽东
+dynasty: 现代
 lang: zh
-tags: [思乡, 经典]   # 注意用英文逗号或用 YAML 列表
-description: 床前明月光，疑是地上霜。举头望明月，低头思故乡。
-published: 2024-01-01
+published: 1934
+creationText: 约1934—1936年
 # draft: false   # 不写就默认 false
 
 ---
 
-床前明月光，疑是地上霜。  
-举头望明月，低头思故乡。
+山，快马加鞭未下鞍。惊回首，离天三尺三。
 
+山，倒海翻江卷巨澜。奔腾急，万马战犹酣。
+
+山，刺破青天锷未残。天欲堕，赖以拄其间。
