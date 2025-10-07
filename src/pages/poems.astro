@@ -9,13 +9,7 @@ poems.sort(
 	(a, b) =>
 		new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
 );
-const todayIndex = poems.length
-	? new Date()
-			.toISOString()
-			.slice(0, 10)
-			.split("-")
-			.reduce((acc, n) => acc + Number(n), 0) % poems.length
-	: 0;
+const todayIndex = Math.floor(Math.random() * poems.length);
 const todaysPoem = poems[todayIndex];
 const { Content } = todaysPoem ? await todaysPoem.render() : { Content: null };
 ---

@@ -3,7 +3,7 @@ title: 十六字令三首
 author: 毛泽东
 dynasty: 现代
 lang: zh
-published: 1934
+published: 1937
 creationText: 约1934—1936年
 # draft: false   # 不写就默认 false
 
