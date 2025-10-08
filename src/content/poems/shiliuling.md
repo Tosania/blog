@@ -14,3 +14,8 @@ creationText: 约1934—1936年
 山，倒海翻江卷巨澜。奔腾急，万马战犹酣。
 
 山，刺破青天锷未残。天欲堕，赖以拄其间。
+
+<video width="640
+" height="240" controls>
+    <source src="/video/shiliulinsanshou.mp4" type="video/mp4">
+</video>
