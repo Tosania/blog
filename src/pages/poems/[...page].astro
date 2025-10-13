@@ -5,29 +5,27 @@ import Pagination from "@/components/control/Pagination.astro";
 import { PAGE_SIZE } from "@/constants/constants";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
 
-// 生成静态分页路径（保持你的写法）
+// 生成静态分页路径
 export const getStaticPaths = (async ({ paginate }) => {
-	// ① 加上草稿过滤
 	const allPoems = (await getCollection("poems")).filter((p) => !p.data.draft);
-
-	// ② 按 published 倒序（与你原逻辑一致）
 	allPoems.sort(
 		(a, b) =>
 			new Date(b.data.published).getTime() -
 			new Date(a.data.published).getTime(),
 	);
-
 	return paginate(allPoems, { pageSize: PAGE_SIZE });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-
-// ③ 仅在第一页显示“今日诗句”
 const isFirstPage = page.currentPage === 1;
 
-// 为“今日诗句”再取一次全量（含非当前页的），随机挑选并渲染正文
-let todaysPoem = null;
-let Content = null;
+// （仅供“随机诗句”使用）把所有诗渲染成 <template>，供前端选择
+let renderedAll: Array<{
+	id: string;
+	title: string;
+	author?: string;
+	html: any;
+}> = [];
 if (isFirstPage) {
 	const all = (await getCollection("poems")).filter((p) => !p.data.draft);
 	all.sort(
@@ -35,24 +33,93 @@ if (isFirstPage) {
 			new Date(b.data.published).getTime() -
 			new Date(a.data.published).getTime(),
 	);
-	const idx = Math.floor(Math.random() * all.length);
-	todaysPoem = all[idx] ?? null;
-	({ Content } = todaysPoem ? await todaysPoem.render() : { Content: null });
+	renderedAll = await Promise.all(
+		all.map(async (p) => {
+			const { Content } = await p.render();
+			return {
+				id: p.slug,
+				title: p.data.title,
+				author: p.data.author,
+				html: Content, // 直接作为组件在 <template> 中使用
+			};
+		}),
+	);
 }
 ---
 
 <MainGridLayout title="诗词集" description="本站精选诗词" lang="zh">
-  {isFirstPage && todaysPoem && (
-    <section class="card-base rounded-2xl border p-5 mb-6">
-      <div class="text-sm opacity-70 mb-2">✨ 随机诗句</div>
-      <a href={`/poems/${todaysPoem.slug}/`} class="block no-underline">
-        <div class="font-bold text-xl">{todaysPoem.data.title}</div>
-        <div class="opacity-70 mt-1">{todaysPoem.data.author}</div>
-        <article class="mt-3 prose-lg dark:prose-invert font-kai !text-[1.4rem] md:@!text-[1.4rem]">
-          {Content && <Content />}
-        </article>
-      </a>
-    </section>
+
+  {isFirstPage && (
+    <>
+      <section class="card-base rounded-2xl border p-5 mb-6">
+        <div class="text-sm opacity-70 mb-2">✨ 今日诗句</div>
+        <a id="todays-link" href="#" class="block no-underline">
+          <div id="todays-title" class="font-bold text-xl"></div>
+          <div id="todays-author" class="opacity-70 mt-1"></div>
+          <article id="todays-content" class="mt-3 prose-lg dark:prose-invert font-kai !text-[1.4rem] md:@!text-[1.4rem]"></article>
+        </a>
+      </section>
+
+      <!-- 把所有诗渲染到 template，前端随机挑选并克隆 -->
+      {renderedAll.map(({ id, title, author, html: Content }) => (
+        <template data-poem={id} data-title={title} data-author={author ?? ""} data-href={`/poems/${id}/`}>
+          <Content />
+        </template>
+      ))}
+
+      <!-- 客户端日期种子随机（同一天固定；到下一天自动更换） -->
+      <script is:inline>
+        // 若希望每次刷新都变，把选 idx 的逻辑改成：Math.floor(Math.random() * tpls.length)
+        (function () {
+          const tpls = Array.from(document.querySelectorAll('template[data-poem]'));
+          if (!tpls.length) return;
+
+          // 使用固定时区的“当天”作为随机种子（示例使用 Asia/Shanghai；可改 'Asia/Tokyo'）
+          const TZ = 'Asia/Shanghai';
+          function todaySeed() {
+            // 把当前时间格式化到目标时区的 YYYY-MM-DD，再转为整数做种
+            const fmt = new Intl.DateTimeFormat('zh-CN', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+            const parts = fmt.formatToParts(new Date());
+            const y = parts.find(p => p.type === 'year')?.value ?? '0000';
+            const m = parts.find(p => p.type === 'month')?.value ?? '00';
+            const d = parts.find(p => p.type === 'day')?.value ?? '00';
+            return parseInt(`${y}${m}${d}`, 10);
+          }
+
+          // 简单可重复伪随机数（Mulberry32）
+          function mulberry32(a) {
+            return function() {
+              let t = a += 0x6D2B79F5;
+              t = Math.imul(t ^ (t >>> 15), t | 1);
+              t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+              return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            }
+          }
+
+          const seed = todaySeed();
+          const rand = mulberry32(seed);
+          const idx = Math.floor(Math.random()*tpls.length)
+          const tpl = tpls[idx];
+
+          // 填充标题/作者/链接与正文
+          const link = document.getElementById('todays-link');
+          const titleEl = document.getElementById('todays-title');
+          const authorEl = document.getElementById('todays-author');
+          const contentEl = document.getElementById('todays-content');
+
+          const href = tpl.dataset.href || '#';
+          const title = tpl.dataset.title || '';
+          const author = tpl.dataset.author || '';
+
+          link.setAttribute('href', href);
+          titleEl.textContent = title;
+          authorEl.textContent = author;
+
+          contentEl.innerHTML = '';
+          contentEl.appendChild(tpl.content.cloneNode(true));
+        })();
+      </script>
+    </>
   )}
 
   <div class="grid gap-4">
@@ -68,7 +135,7 @@ if (isFirstPage) {
       </a>
     ))}
   </div>
-  <Pagination page={page} base="/poems" class="mx-auto onload-animation mt-6" />
 
+  <Pagination page={page} base="/poems" class="mx-auto onload-animation mt-6" />
 
 </MainGridLayout>
