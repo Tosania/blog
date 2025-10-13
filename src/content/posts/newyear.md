@@ -1,6 +1,6 @@
 ---
 title: 阿廖沙的新年
-published: 2025-09-26
+published: 2025-10-12
 description: "阿廖沙，别害怕，火车在上面停下了，他一笑天就亮了."
 tags: [碎碎念]
 ---
