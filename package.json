@@ -64,7 +64,7 @@
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.4",
     "@astrojs/vercel": "^8.2.8",
-    "@biomejs/biome": "2.2.4",
+    "@biomejs/biome": "2.3.11",
     "@iconify-json/fa7-solid": "^1.2.1",
     "@iconify-json/simple-icons": "^1.2.53",
     "@rollup/plugin-yaml": "^4.1.2",
