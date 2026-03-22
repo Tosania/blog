@@ -1,9 +1,15 @@
 ---
-title: 本科生努力的一天
+title: "本科生努力的一天"
 published: 2025-09-26
-tags: [碎碎念]
+description: ''
+image: ''
+tags: ["碎碎念"]
+category: ''
+draft: false
+lang: ''
+comments: true
+section: "life"
 ---
-
 7:30 神秘闹钟响起！
 
 7:40 神秘闹钟响起！可恶的早八，思考了一下翘课的可能性，考虑到老师的邪恶点名，我还是最终不情愿的下床挑选一套屌丝穿搭

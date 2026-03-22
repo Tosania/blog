@@ -1,10 +1,15 @@
 ---
-title: 阿廖沙的新年
+title: "阿廖沙的新年"
 published: 2025-10-12
 description: "阿廖沙，别害怕，火车在上面停下了，他一笑天就亮了."
-tags: [碎碎念]
+image: ''
+tags: ["碎碎念"]
+category: ''
+draft: false
+lang: ''
+comments: true
+section: "hidden"
 ---
-
 这是我在抖音看到的一个视频，下面有一个评论：
 
 

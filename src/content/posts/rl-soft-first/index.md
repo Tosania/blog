@@ -1,13 +1,15 @@
 ---
-title: 基于pybullet的软体机器人仿真与强化学习反运动学学习
+title: "基于pybullet的软体机器人仿真与强化学习反运动学学习"
 published: 2025-10-02
 description: "一份简单的技术报告"
 image: "./a.gif"
-tags: [simulation,robotics,Reinforcement learning]
-category: Technical Report
+tags: ["simulation", "robotics", "Reinforcement learning"]
+category: "Technical Report"
 draft: false
+lang: ''
+comments: true
+section: "tech"
 ---
-
 ## 前言
 
 这个项目是我大二下做的一个项目，当时刚刚联系到老师，老师说让我先了解一下连续体机器人这个领域，然后在这个领域开始做一些工作，当时他给我的技术路线就是使用pybullet来做这个仿真。当然了后来老师也说这个仿真和现实根本没有关系，现实机器人不可能是这么做的，这个逆运动学的方式也和强化学习马尔科夫决策链的形式不是很符合，因此这个项目其实没有什么实际的价值。但是这个项目确实给了一个还不错的技术路线，就是从仿真到策略训练到整体的代码的编写规范等等，还是起到了一点很不错的效果的。

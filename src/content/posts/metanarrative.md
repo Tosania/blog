@@ -1,13 +1,15 @@
 ---
-title: a
+title: "宏大叙事"
 published: 2025-10-02
 description: "关于宏大叙事的一点看法"
-tags: [杂谈]
-category: Viewpoint
+image: ''
+tags: ["杂谈"]
+category: "Viewpoint"
 draft: true
-section: hidden
+lang: ''
+comments: true
+section: "hidden"
 ---
-
 之前就想对这个主题有一点想法，起因是在知乎上老是刷到一些类似的观点，说我们不要关注宏大叙事要关注个人生存，感觉挺有意思的。后来看了看具体的定义，感觉其实现代互联网把这个概念扩大化和曲解了，当然其实我觉得曲解后的东西可能反而更有讨论的价值。
 
 ## 定义

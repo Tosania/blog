@@ -1,11 +1,15 @@
 ---
-title: 以梦为马
+title: "以梦为马"
 published: 2025-10-12
 description: "我的十八岁"
-tags: [历史资料留存]
-draft: True
+image: ''
+tags: ["历史资料留存"]
+category: ''
+draft: true
+lang: ''
+comments: true
+section: "hidden"
 ---
-
 这是一份手写文章的文字实录。文字内容如下：
 
 **以梦为马**
