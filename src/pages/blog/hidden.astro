@@ -1,0 +1,64 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import PostCard from "@/components/PostCard.astro";
+import { getRawSortedPosts } from "@/utils/content-utils";
+import { hiddenConfig } from "@/config";
+
+export const prerender = false;
+
+const enabled = Astro.cookies.get("hidden_mode")?.value === "1";
+const hiddenPosts = enabled ? await getRawSortedPosts("hidden") : [];
+let delay = 0;
+const interval = 50;
+---
+
+<MainGridLayout title="Hidden" description="Hidden posts">
+	{!enabled ? (
+		<div class="card-base p-6 onload-animation">
+			<div class="text-75 leading-8">
+				当前未启用隐藏模式。请在任意页面连续输入
+				<code class="mx-1 rounded bg-[var(--btn-regular-bg)] px-2 py-1">{hiddenConfig.command}</code>
+				后再返回本页。
+			</div>
+		</div>
+	) : hiddenPosts.length === 0 ? (
+		<div class="card-base p-6 onload-animation">
+			<p class="text-50">当前没有标记为隐藏类的文章。</p>
+		</div>
+	) : (
+		<div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
+			{hiddenPosts.map((entry) => (
+				<PostCard
+					entry={entry}
+					title={entry.data.title}
+					tags={entry.data.tags}
+					category={entry.data.category}
+					published={entry.data.published}
+					updated={entry.data.updated}
+					url={`/blog/hidden/${entry.slug}/`}
+					image={entry.data.image}
+					description={entry.data.description}
+					draft={entry.data.draft}
+					class:list="onload-animation"
+					style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
+				></PostCard>
+			))}
+		</div>
+	)}
+</MainGridLayout>
+
+{!enabled && (
+	<script is:inline>
+		(async () => {
+			try {
+				if (localStorage.getItem("hidden_mode_enabled") !== "1") return;
+				const resp = await fetch("/api/hidden-mode/", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ enabled: true }),
+				});
+				if (resp.ok) window.location.reload();
+			} catch {}
+		})();
+	</script>
+)}

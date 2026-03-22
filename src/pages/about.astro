@@ -1,25 +1,109 @@
 ---
-
-import { getEntry, render } from "astro:content";
-import Markdown from "@components/misc/Markdown.astro";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
-
-const aboutPost = await getEntry("spec", "about");
-
-if (!aboutPost) {
-	throw new Error("About page content not found");
-}
-
-const { Content } = await render(aboutPost);
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
 ---
-<MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
-    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
-            <Markdown class="mt-2">
-                <Content />
-            </Markdown>
-        </div>
-    </div>
+
+<MainGridLayout title="About" description="About my life">
+	<div class="about-life about-default">
+		<section class="card-base p-6 onload-animation">
+			<h1 class="text-90 text-3xl font-bold">About</h1>
+			<p class="text-75 mt-4 leading-8">
+				这里主要写一些生活里的我。相比学术页面，这一页更像是一个慢慢更新的日常切片：
+				我在学校里的节奏、看过的书和电影、做饭和运动的小习惯，以及一些没那么“正式”的想法。
+			</p>
+		</section>
+
+		<section class="grid gap-4 md:grid-cols-2 onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">日常</h2>
+				<p class="text-75 mt-3 leading-8">
+					我喜欢把一天拆成几个简单的节奏：学习、项目、运动和休息。最近在尝试更稳定的作息，
+					让每周都有固定的输入和输出，不追求“爆发”，更追求持续。
+				</p>
+			</article>
+
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">兴趣</h2>
+				<p class="text-75 mt-3 leading-8">
+					除了技术和研究，我也会花时间读诗词、听音乐、看一些纪录片。它们让我在高强度工作之外，
+					还能保留一点感受力，也会反过来影响我看待问题的方式。
+				</p>
+			</article>
+		</section>
+
+		<section class="card-base p-6 onload-animation" style="animation-delay: calc(var(--content-delay) + 120ms)">
+			<h2 class="text-90 text-2xl font-bold">近况</h2>
+			<p class="text-75 mt-3 leading-8">
+				现在的目标很简单：认真完成手头的研究和项目，同时把生活过得更稳一点。
+				如果你也在走一条长期主义的路，欢迎随时交流。
+			</p>
+		</section>
+	</div>
+
+	<div class="about-life about-hidden">
+		<section class="card-base p-6 onload-animation hidden-hero">
+			<div class="hidden-kicker">Hidden About</div>
+			<h1 class="text-90 text-3xl font-bold mt-2">夜间侧写</h1>
+			<p class="text-75 mt-4 leading-8">
+				这是 hidden 模式下的专属 About。比起公开介绍，这里更像一份私密的生活注脚：
+				记录我在高压学习和项目之外，如何保持节奏、恢复状态，以及长期坚持的细小习惯。
+			</p>
+		</section>
+
+		<section class="grid gap-4 md:grid-cols-2 onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">低噪声时间</h2>
+				<p class="text-75 mt-3 leading-8">
+					我会给自己留一段不被打扰的时间，不看消息，不切任务，只做一件事：
+					读书、散步或整理当天笔记。这个过程很慢，但能把注意力重新拉回到自己。
+				</p>
+			</article>
+
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">长期主义实践</h2>
+				<p class="text-75 mt-3 leading-8">
+					我越来越相信，真正有价值的成长来自重复的小动作。
+					每天推进一点点项目、每周复盘一次生活，累积起来就会形成非常稳定的变化。
+				</p>
+			</article>
+		</section>
+	</div>
 </MainGridLayout>
+
+<style>
+	.about-life {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.about-hidden {
+		display: none;
+	}
+
+	:global(html.hidden-mode) .about-default {
+		display: none;
+	}
+
+	:global(html.hidden-mode) .about-hidden {
+		display: grid;
+	}
+
+	.hidden-hero {
+		background:
+			radial-gradient(circle at 15% 12%, rgba(101, 138, 255, 0.2), transparent 46%),
+			radial-gradient(circle at 86% 18%, rgba(88, 67, 176, 0.2), transparent 42%),
+			linear-gradient(140deg, rgba(18, 22, 35, 0.95), rgba(11, 14, 24, 0.98));
+		border: 1px solid rgba(165, 184, 255, 0.2);
+	}
+
+	.hidden-kicker {
+		display: inline-block;
+		padding: 0.2rem 0.65rem;
+		border-radius: 999px;
+		font-size: 0.74rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgba(221, 230, 255, 0.9);
+		border: 1px solid rgba(162, 185, 255, 0.3);
+		background: rgba(68, 88, 160, 0.24);
+	}
+</style>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
+import { Icon } from "astro-icon/components";
 import Pagination from "@/components/control/Pagination.astro";
 import { PAGE_SIZE } from "@/constants/constants";
 import MainGridLayout from "@/layouts/MainGridLayout.astro";
@@ -97,7 +98,7 @@ if (isFirstPage) {
           }
 
           const seed = todaySeed();
-          const rand = mulberry32(seed);
+          mulberry32(seed);
           const idx = Math.floor(Math.random()*tpls.length)
           const tpl = tpls[idx];
 
@@ -124,15 +125,32 @@ if (isFirstPage) {
 
   <div class="grid gap-4">
     {page.data.map((p) => (
-      <a href={`/poems/${p.slug}/`} class="no-underline">
-        <div class="btn-card rounded-2xl p-4 hover:shadow">
-          <div class="font-bold text-lg">{p.data.title}</div>
-          <div class="opacity-70 mt-1">
+      <div class="card-base flex w-full rounded-[var(--radius-large)] overflow-hidden relative">
+        <div class="pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative w-full md:w-[calc(100%_-_52px_-_12px)]">
+          <a
+            href={`/poems/${p.slug}/`}
+            class="transition group w-full block font-bold mb-3 text-3xl text-90
+            hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
+            active:text-[var(--title-active)] dark:active:text-[var(--title-active)]
+            before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+            before:absolute before:top-[35px] before:left-[18px] before:hidden md:before:block"
+          >
+            {p.data.title}
+            <Icon class="inline text-[2rem] text-[var(--primary)] md:hidden translate-y-0.5 absolute" name="material-symbols:chevron-right-rounded" />
+            <Icon class="text-[var(--primary)] text-[2rem] transition hidden md:inline absolute translate-y-0.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0" name="material-symbols:chevron-right-rounded" />
+          </a>
+          <div class="text-75 mb-3.5 pr-4">
             {p.data.author}{p.data.dynasty ? ` · ${p.data.dynasty}` : ""}{p.data.lang ? ` · ${p.data.lang}` : ""}
           </div>
-          {p.data.description && <div class="mt-2">{p.data.description}</div>}
+          {p.data.description && <div class="transition text-75 mb-3.5 pr-4 line-clamp-2">{p.data.description}</div>}
         </div>
-      </a>
+        <a href={`/poems/${p.slug}/`} aria-label={p.data.title} class="!hidden md:!flex btn-regular w-[3.25rem]
+         absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)]
+         hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
+        ">
+          <Icon name="material-symbols:chevron-right-rounded" class="transition text-[var(--primary)] text-4xl mx-auto" />
+        </a>
+      </div>
     ))}
   </div>
 

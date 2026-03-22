@@ -15,7 +15,3 @@ creationText: 1954年
 
 
 
-<video width="640
-" height="240" controls>
-    <source src="/video/langtaosha_beidaihe.mp4" type="video/mp4">
-</video>

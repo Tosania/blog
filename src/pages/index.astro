@@ -1,0 +1,334 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import { profileConfig } from "@/config";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getRawSortedPosts } from "@/utils/content-utils";
+
+function estimateWordCount(text: string) {
+	const cjkCount = (text.match(/[\u4E00-\u9FFF]/g) || []).length;
+	const latinCount = (
+		text.replace(/[\u4E00-\u9FFF]/g, " ").match(/[A-Za-z0-9_]+/g) || []
+	).length;
+	return cjkCount + latinCount;
+}
+
+function summarize(text: string, max = 120) {
+	const cleaned = text.replace(/\s+/g, " ").trim();
+	if (!cleaned) return "";
+	if (cleaned.length <= max) return cleaned;
+	return `${cleaned.slice(0, max)}...`;
+}
+
+const posts = await getRawSortedPosts("all-public");
+const poems = (await getCollection("poems", ({ data }) => !data.draft)).sort(
+	(a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
+);
+const aboutEntry = await getEntry("spec", "about");
+
+const allEntries = [...posts, ...poems];
+const totalWords = allEntries.reduce((acc, entry) => acc + estimateWordCount(entry.body || ""), 0);
+
+const latestDate = allEntries.reduce((latest, entry) => {
+	const d = new Date(entry.data.updated ?? entry.data.published);
+	return d > latest ? d : latest;
+}, new Date("2024-01-01"));
+
+const launchDate = new Date("2024-06-16");
+const daysOnline = Math.max(
+	1,
+	Math.ceil((Date.now() - launchDate.getTime()) / (1000 * 60 * 60 * 24)),
+);
+
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+	month: "short",
+	day: "numeric",
+	year: "numeric",
+}).format(latestDate);
+
+const wordsDisplay = totalWords > 10000 ? `${(totalWords / 10000).toFixed(1)}w` : `${totalWords}`;
+const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。");
+---
+
+<MainGridLayout title="Home" description="Portal home page">
+	<div class="portal portal-default">
+		<section class="card-base card-shadow hero onload-animation">
+			<div>
+				<h1 class="text-90 mt-1 text-4xl font-bold">{profileConfig.name}</h1>
+				<p class="text-75 mt-2 leading-8">
+					欢迎来到我的个人站点。我现在主要聚焦在具身智能与机器人方向，平时会记录研究想法、
+					项目复盘，以及一些生活观察。这里既是持续更新的学习档案，也希望成为一个能被反复回看的长期空间。
+				</p>
+			</div>
+		</section>
+
+		<section class="grid gap-4 md:grid-cols-2 onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">学术介绍页面</h2>
+				<div class="text-75 mt-3 leading-8">{aboutSummary}</div>
+				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/academic/">
+					进入 Academic 查看完整学术介绍
+				</a>
+			</article>
+
+			<article class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">生活介绍页面</h2>
+				<div class="text-75 mt-3 leading-8">
+					这一页聚焦日常记录与阶段性思考，包括校园生活、个人体验和长期计划。
+					如果你更想先从轻松内容开始，可以从这里进入生活类文章。
+				</div>
+				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/blog/category/life/">
+					进入生活类 Blog
+				</a>
+			</article>
+		</section>
+
+		<section class="onload-animation" style="animation-delay: calc(var(--content-delay) + 160ms)">
+			<div class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">Statistics</h2>
+				<div class="stats mt-4">
+					<div class="stat-card btn-card rounded-xl p-4">
+						<div class="text-90 text-3xl font-bold">{daysOnline}</div>
+						<div class="text-50">Days Online</div>
+					</div>
+					<div class="stat-card btn-card rounded-xl p-4">
+						<div class="text-90 text-3xl font-bold">{formattedDate}</div>
+						<div class="text-50">Last Updated</div>
+					</div>
+					<div class="stat-card btn-card rounded-xl p-4">
+						<div class="text-90 text-3xl font-bold">{wordsDisplay}</div>
+						<div class="text-50">Total Words</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<div class="portal portal-hidden">
+		<section class="hidden-hero onload-animation">
+			<div class="hidden-hero__noise"></div>
+			<div class="hidden-hero__content">
+				<div class="hidden-hero__kicker">YYC SIGNAL ACCEPTED</div>
+				<h2 class="hidden-hero__title">Hidden Passage</h2>
+				<p class="hidden-hero__desc">
+					你已进入隐藏入口。主页内容切换为夜间控制台视图，公开流会被弱化，导航将优先导向隐藏文章列表。
+				</p>
+				<div class="hidden-hero__actions">
+					<a class="btn-regular rounded-lg px-4 py-2 font-medium" href="/blog/hidden/">进入 Hidden Blog</a>
+					<a class="btn-regular rounded-lg px-4 py-2 font-medium" href="/archive/">Archive</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="hidden-grid onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
+			<article class="hidden-card">
+				<div class="hidden-card__label">Mode</div>
+				<div class="hidden-card__value">Ghost Layer</div>
+				<div class="hidden-card__hint">视觉资源切换完成</div>
+			</article>
+			<article class="hidden-card">
+				<div class="hidden-card__label">Scope</div>
+				<div class="hidden-card__value">Section: hidden</div>
+				<div class="hidden-card__hint">只显示隐藏类内容</div>
+			</article>
+			<article class="hidden-card">
+				<div class="hidden-card__label">Command</div>
+				<div class="hidden-card__value">yyc</div>
+				<div class="hidden-card__hint">再次输入可退出</div>
+			</article>
+		</section>
+
+		<section class="hidden-panel onload-animation" style="animation-delay: calc(var(--content-delay) + 140ms)">
+			<div class="hidden-panel__header">
+				<h3>Live Console</h3>
+				<span>home://hidden/console</span>
+			</div>
+			<ul class="hidden-log">
+				<li><span>[ok]</span> hidden mode enabled and persisted</li>
+				<li><span>[ok]</span> blog entrance redirected to <code>/blog/hidden/</code></li>
+				<li><span>[ok]</span> banner and avatar swapped</li>
+				<li><span>[hint]</span> 输入 <code>yyc</code> 可随时返回普通模式</li>
+			</ul>
+		</section>
+	</div>
+</MainGridLayout>
+
+<style>
+	.portal {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.hero {
+		padding: 1.5rem;
+	}
+
+	.stats {
+		display: grid;
+		gap: 0.75rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	@media (max-width: 900px) {
+		.stats {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.portal-hidden {
+		display: none;
+	}
+
+	:global(html.hidden-mode) .portal-default {
+		display: none;
+	}
+
+	:global(html.hidden-mode) .portal-hidden {
+		display: grid;
+	}
+
+	.hidden-hero {
+		position: relative;
+		overflow: hidden;
+		border-radius: var(--radius-large);
+		border: 1px solid rgba(137, 168, 255, 0.22);
+		padding: 1.5rem;
+		background:
+			radial-gradient(circle at 10% 15%, rgba(86, 128, 255, 0.24), transparent 46%),
+			radial-gradient(circle at 85% 20%, rgba(108, 82, 203, 0.26), transparent 44%),
+			linear-gradient(130deg, rgba(10, 14, 24, 0.94), rgba(15, 16, 22, 0.98));
+		box-shadow: 0 20px 48px rgba(0, 0, 0, 0.34);
+	}
+
+	.hidden-hero__noise {
+		position: absolute;
+		inset: 0;
+		background-image: repeating-linear-gradient(
+			0deg,
+			rgba(255, 255, 255, 0.035) 0,
+			rgba(255, 255, 255, 0.035) 1px,
+			transparent 1px,
+			transparent 3px
+		);
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	.hidden-hero__content {
+		position: relative;
+		z-index: 2;
+	}
+
+	.hidden-hero__kicker {
+		display: inline-flex;
+		border-radius: 999px;
+		border: 1px solid rgba(142, 163, 255, 0.34);
+		background: rgba(62, 76, 143, 0.24);
+		padding: 0.25rem 0.6rem;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
+		color: rgba(221, 229, 255, 0.86);
+	}
+
+	.hidden-hero__title {
+		margin-top: 0.7rem;
+		font-size: clamp(2rem, 5vw, 3rem);
+		font-weight: 700;
+		color: rgba(241, 245, 255, 0.95);
+	}
+
+	.hidden-hero__desc {
+		margin-top: 0.75rem;
+		max-width: 42rem;
+		line-height: 1.85;
+		color: rgba(219, 226, 255, 0.86);
+	}
+
+	.hidden-hero__actions {
+		margin-top: 1rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+	}
+
+	.hidden-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.8rem;
+	}
+
+	.hidden-card {
+		border-radius: var(--radius-large);
+		border: 1px solid rgba(158, 179, 255, 0.18);
+		background: linear-gradient(160deg, rgba(18, 24, 35, 0.9), rgba(10, 13, 20, 0.95));
+		padding: 1rem;
+	}
+
+	.hidden-card__label {
+		font-size: 0.76rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: rgba(169, 183, 235, 0.76);
+	}
+
+	.hidden-card__value {
+		margin-top: 0.4rem;
+		font-size: 1.45rem;
+		font-weight: 700;
+		color: rgba(237, 242, 255, 0.95);
+	}
+
+	.hidden-card__hint {
+		margin-top: 0.45rem;
+		font-size: 0.86rem;
+		color: rgba(201, 211, 250, 0.72);
+	}
+
+	.hidden-panel {
+		border-radius: var(--radius-large);
+		border: 1px solid rgba(137, 168, 255, 0.2);
+		background: linear-gradient(180deg, rgba(11, 16, 26, 0.94), rgba(8, 12, 20, 0.98));
+		padding: 1rem 1.1rem;
+	}
+
+	.hidden-panel__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px dashed rgba(174, 196, 255, 0.22);
+	}
+
+	.hidden-panel__header h3 {
+		font-weight: 700;
+		color: rgba(238, 243, 255, 0.94);
+	}
+
+	.hidden-panel__header span {
+		font-size: 0.8rem;
+		color: rgba(179, 194, 245, 0.78);
+	}
+
+	.hidden-log {
+		margin-top: 0.75rem;
+		display: grid;
+		gap: 0.65rem;
+		color: rgba(221, 230, 255, 0.88);
+	}
+
+	.hidden-log li {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+		font-size: 0.9rem;
+	}
+
+	.hidden-log li span {
+		margin-right: 0.45rem;
+		color: rgba(138, 229, 176, 0.88);
+	}
+
+	@media (max-width: 900px) {
+		.hidden-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

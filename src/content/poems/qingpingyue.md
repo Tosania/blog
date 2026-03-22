@@ -13,7 +13,3 @@ creationText: 1934年4月
 
 会昌城外高峰，颠连直接东溟。战士指看南粤，更加郁郁葱葱。
 
-<video width="640
-" height="240" controls>
-    <source src="/video/qingpingyue.mp4" type="video/mp4">
-</video>

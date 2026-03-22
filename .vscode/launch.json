@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Local Preview: Web (Astro)",
+      "command": "bash ./local-preview.sh 1",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Local Preview: Editor (Post Studio)",
+      "command": "bash ./local-preview.sh 2",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "request": "launch",
+      "name": "Local Preview: Choose",
+      "command": "bash ./local-preview.sh ${input:previewMode}",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "previewMode",
+      "type": "pickString",
+      "description": "Choose preview mode",
+      "options": [
+        "1",
+        "2"
+      ],
+      "default": "1"
+    }
+  ]
+}

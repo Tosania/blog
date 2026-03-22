@@ -1,0 +1,158 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+const publication = {
+	title: "Embodied Intelligence Technology for Next-Generation Soft Robots: A Survey",
+	status: ["Review Paper", "Published"],
+	authors:
+		"Jingyu Zhang#, Chenyang Shen#, Zixin Zhu, Haochuan Tong and Qin Fang",
+	note: "Received: 16 Nov 2025 · Revised: 27 Jan 2026 · Accepted: 10 Feb 2026 · Published online: 17 Feb 2026",
+	type: "Engineered Science · Review Paper",
+	year: "Volume 40 (2026), Article 2073",
+	abstract:
+		"Soft robotics has become a rapidly expanding field that redefines how intelligence can emerge from the interplay of body, material, and control. Unlike conventional rigid robots, soft robots leverage compliance, deformation, and morphological computation to enable safe, adaptive interaction with complex environments. This unique embodiment underpins the concept of embodied intelligence (EI), in which sensing, actuation, and reasoning are physically coupled within the robot’s morphology rather than isolated in separate modules. Achieving such embodied intelligence requires the deep integration of four interrelated technologies: modeling, simulation, perception, and control. Modeling provides the physical understanding that enables robots to interpret and predict their own body dynamics. At the same time, simulation extends this capacity into virtual space, allowing embodied behaviors to be designed, tested, and optimized efficiently. Perception transforms the soft body into a distributed sensory organ, enabling robots to sense through deformation and to interact with their surroundings in an inherently adaptive manner. Control, finally, closes the loop of embodiment by exploiting mechanical compliance and learning-based strategies to generate coordinated and context-aware behaviors that arise naturally from morphology-environment coupling. This review offers a comprehensive synthesis of the four pillars of embodied intelligence in soft robotics, emphasizing how they coevolve to realize physically grounded intelligence, and discusses the remaining challenges and future directions toward scalable, robust, and autonomous soft robotic systems.",
+	links: [
+		{ label: "WEBSITE", href: "https://www.espublisher.com/journals/articledetails/2073" },
+		{ label: "DOI", href: "https://doi.org/10.30919/es2073" },
+		],
+};
+---
+
+<MainGridLayout title="publication" description="Publication">
+	<section class="publication-wrap">
+		<article class="paper-card onload-animation">
+			<h1 class="paper-title">{publication.title}</h1>
+
+			<div class="paper-badges">
+				<span class="badge badge-muted">{publication.status[0]}</span>
+				<span class="badge badge-green">{publication.status[1]}</span>
+			</div>
+
+			<p class="paper-authors">{publication.authors}</p>
+			<p class="paper-note">{publication.note}</p>
+
+			<p class="paper-meta">
+				<strong>{publication.type}</strong>
+				<span>•</span>
+				{publication.year}
+			</p>
+
+			<p class="paper-abstract">{publication.abstract}</p>
+
+			<div class="paper-links">
+				{publication.links.map((item) => (
+					<a class="paper-link" href={item.href} target="_blank" rel="noopener noreferrer">
+						{item.label}
+					</a>
+				))}
+			</div>
+		</article>
+	</section>
+</MainGridLayout>
+
+<style>
+	.publication-wrap {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.paper-card {
+		border: 1px solid #d5d7dc;
+		border-radius: 1.3rem;
+		padding: 1.5rem;
+		background: #f3f4f6;
+		color: #1f2937;
+	}
+
+	.paper-title {
+		font-size: clamp(2rem, 2.6vw, 3rem);
+		line-height: 1.2;
+		font-weight: 500;
+		color: #1f2937;
+	}
+
+	.paper-badges {
+		margin-top: 1.2rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem;
+	}
+
+	.badge {
+		padding: 0.35rem 1rem;
+		border-radius: 999px;
+		font-size: 1.15rem;
+	}
+
+	.badge-muted {
+		background: #e5e7eb;
+		color: #374151;
+	}
+
+	.badge-green {
+		background: #c9eed8;
+		color: #166534;
+	}
+
+	.paper-authors {
+		margin-top: 1rem;
+		font-size: 1.25rem;
+		line-height: 1.55;
+		color: #374151;
+	}
+
+	.paper-note {
+		margin-top: 0.5rem;
+		font-size: 1rem;
+		color: #6b7280;
+	}
+
+	.paper-meta {
+		margin-top: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		font-size: 1.2rem;
+		color: #1f2937;
+	}
+
+	.paper-abstract {
+		margin-top: 1.1rem;
+		font-size: 1.15rem;
+		line-height: 1.8;
+		color: #374151;
+	}
+
+	.paper-links {
+		margin-top: 1.4rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.8rem;
+	}
+
+	.paper-link {
+		border: 1px solid #d1d5db;
+		border-radius: 0.8rem;
+		background: #e5e7eb;
+		padding: 0.45rem 1rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-decoration: underline;
+		color: #374151;
+	}
+
+	@media (max-width: 900px) {
+		.paper-card {
+			padding: 1rem;
+		}
+
+		.paper-title {
+			font-size: 1.9rem;
+		}
+
+		.paper-authors,
+		.paper-abstract {
+			font-size: 1rem;
+		}
+	}
+</style>

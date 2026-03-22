@@ -4,7 +4,6 @@ import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
 import { url } from "../utils/url-utils";
-import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
@@ -33,6 +32,33 @@ let links: NavBarLink[] = navBarConfig.links.map(
         </a>
         <div class="hidden md:flex">
             {links.map((l) => {
+                if (l.children && l.children.length > 0) {
+                    return <div class="relative group" data-nav-parent={l.name}>
+                        <a aria-label={l.name} href={url(l.url)}
+                           class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+                        >
+                            <div class="flex items-center gap-1">
+                                {l.name}
+                                <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-[1.2rem] transition group-hover:rotate-180"></Icon>
+                            </div>
+                        </a>
+                        <div class="absolute left-0 top-full pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition" data-nav-children={l.name}>
+                            <div class="card-base min-w-[10rem] p-2 shadow-xl dark:shadow-none">
+                                {l.children.map((child) => (
+                                    <a
+                                        aria-label={child.name}
+                                        href={child.external ? child.url : url(child.url)}
+                                        target={child.external ? "_blank" : null}
+                                        class="btn-plain rounded-lg h-10 font-bold px-3 w-full justify-start"
+                                    >
+                                        {child.name}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </div>;
+                }
+
                 return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
                           class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
                 >
@@ -51,7 +77,6 @@ let links: NavBarLink[] = navBarConfig.links.map(
                         <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
                     </button>
             )}
-            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
@@ -62,24 +87,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
 </div>
 
 <script>
-function switchTheme() {
-    if (localStorage.theme === 'dark') {
-        document.documentElement.classList.remove('dark');
-        localStorage.theme = 'light';
-    } else {
-        document.documentElement.classList.add('dark');
-        localStorage.theme = 'dark';
-    }
-}
-
 function loadButtonScript() {
-    let switchBtn = document.getElementById("scheme-switch");
-    if (switchBtn) {
-        switchBtn.onclick = function () {
-            switchTheme()
-        };
-    }
-
     let settingBtn = document.getElementById("display-settings-switch");
     if (settingBtn) {
         settingBtn.onclick = function () {

@@ -11,6 +11,8 @@
     "astro": "astro",
     "type-check": "tsc --noEmit --isolatedDeclarations",
     "new-post": "node scripts/new-post.js",
+    "post-studio": "node scripts/post-studio.mjs",
+    "local-preview": "bash ./local-preview.sh",
     "format": "biome format --write ./src",
     "lint": "biome check --write ./src",
     "preinstall": "npx only-allow pnpm"

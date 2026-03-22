@@ -1,0 +1,45 @@
+---
+import type { GetStaticPaths } from "astro";
+import Pagination from "@/components/control/Pagination.astro";
+import PostPage from "@/components/PostPage.astro";
+import { PAGE_SIZE } from "@/constants/constants";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getRawSortedPosts } from "@/utils/content-utils";
+import { type PostSection, PUBLIC_POST_SECTIONS } from "@/utils/post-section";
+
+const labels: Record<PostSection, string> = {
+	research: "科研类",
+	tech: "技术类",
+	life: "生活类",
+	hidden: "隐藏类",
+};
+
+export const getStaticPaths = (async ({ paginate }) => {
+	let paths: any[] = [];
+
+	for (const section of PUBLIC_POST_SECTIONS) {
+		const posts = await getRawSortedPosts(section);
+		const pages = paginate(posts, {
+			params: { type: section },
+			props: { section },
+			pageSize: PAGE_SIZE,
+		});
+		paths = paths.concat(pages);
+	}
+
+	return paths;
+}) satisfies GetStaticPaths;
+
+const { page, section } = Astro.props as { page: any; section: PostSection };
+const len = page.data.length;
+---
+
+<MainGridLayout title={`Blog · ${labels[section]}`} description={`Blog posts in ${labels[section]}`}>
+	<PostPage page={page}></PostPage>
+	<Pagination
+		class="mx-auto onload-animation"
+		page={page}
+		base={`/blog/category/${section}`}
+		style={`animation-delay: calc(var(--content-delay) + ${len * 50}ms)`}
+	></Pagination>
+</MainGridLayout>

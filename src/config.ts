@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
 		src: "assets/images/banner.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
-			enable: true, // Display the credit text of the banner image
+			enable: false, // Display the credit text of the banner image
 			text: "hexo", // Credit text to be displayed
 			url: "https://tosania.github.io/", // (Optional) URL link to the original artwork or artist's page
 		},
@@ -41,9 +41,24 @@ export const siteConfig: SiteConfig = {
 
 export const navBarConfig: NavBarConfig = {
 	links: [
-		LinkPreset.Home,
+		{ name: "Home", url: "/" },
+		{
+			name: "Blog",
+			url: "/blog/",
+			children: [
+				{ name: "All", url: "/blog/" },
+				{ name: "Research", url: "/blog/category/research/" },
+				{ name: "Tech", url: "/blog/category/tech/" },
+				{ name: "Life", url: "/blog/category/life/" },
+			],
+		},
 		LinkPreset.Archive,
-		LinkPreset.About,
+		{
+			name: "academic",
+			url: "/academic/",
+			children: [{ name: "publication", url: "/academic/publication/" }],
+		},
+		{ name: "About", url: "/about/" },
 		{ name: "poems", url: "/poems/" },
 		{
 			name: "GitHub",
@@ -109,4 +124,12 @@ export const giscus = {
 	mapping: "pathname",
 	lang: "zh-CN",
 	theme: "preferred_color_scheme", // 简单好用
+} as const;
+
+export const hiddenConfig = {
+	// 彩蛋命令：在页面任意位置连续输入该命令，进入/退出隐藏模式
+	command: "yyc",
+	// 隐藏模式视觉资源（放在 public 下）
+	hiddenAvatar: "/hidden/avatar.png",
+	hiddenBanner: "/hidden/banner.png",
 } as const;

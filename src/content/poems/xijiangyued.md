@@ -13,7 +13,3 @@ creationText: 约1500年
 
 青史几行名姓，北邙无数荒丘。前人田地后人收，说甚龙争虎斗。
 
-<video width="640
-" height="240" controls>
-    <source src="/video/xijiangyue.mp4" type="video/mp4">
-</video>

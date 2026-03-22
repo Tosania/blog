@@ -15,7 +15,3 @@ creationText: 1963年1月9日
 
 
 
-<video width="640
-" height="240" controls>
-    <source src="/video/manjianghong_heguomoruo.mp4" type="video/mp4">
-</video>

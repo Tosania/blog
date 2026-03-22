@@ -1,0 +1,172 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+
+const aboutData = {
+	name: "Chenyang Shen",
+	title: "B.Eng. Student in Automation",
+	affiliation: "Harbin Institute of Technology, Weihai",
+	bio: [
+		"I am an undergraduate student in Automation at Harbin Institute of Technology, Weihai. My research interests include robotics, embodied intelligence, reinforcement learning, and robot control.",
+		"During my undergraduate studies, I have been working with Prof. Jingyu Zhang on soft robot control. Our research focuses on achieving high-precision control of tendon-driven soft robots under complex environments and load disturbances. This work is currently being prepared for submission to IEEE Robotics and Automation Letters. We have also published a survey article in Engineered Science on soft robotics and embodied intelligence, which reviews recent progress and future directions in modeling, simulation, perception, and control.",
+		"In the future, I hope to continue pursuing research in robotics and embodied intelligence. I am particularly interested in combining embodied approaches with classical control methods to help robots perform more effectively and generalize better in longer-horizon and more complex tasks.",
+	],
+	interests: [
+		"Soft robotics",
+		"Embodied intelligence",
+		"Reinforcement learning",
+		"Robot modeling and control",
+	],
+	contactNote:
+		"If my work is of interest to you, I would be very grateful for any discussion, suggestions, or opportunities for collaboration. Please feel free to contact me by 1587775166@qq.com.",
+};
+---
+
+<MainGridLayout title="Academic" description="Academic">
+	<div class="about-replica card-base">
+		<header class="about-topbar">
+			<a class="site-title" href="#about-top">{aboutData.name} / Homepage</a>
+			<nav class="about-nav">
+				<a href="#about-section">Academic</a>
+				<a href="#publications-section">Publication</a>
+				<a href="#contact-section">Contact</a>
+			</nav>
+		</header>
+
+		<div class="about-layout" id="about-top">
+			<section class="about-content">
+				<section class="content-section" id="about-section">
+					<h1 class="name">{aboutData.name}</h1>
+					<p class="role">{aboutData.title}</p>
+					<p class="affiliation">{aboutData.affiliation}</p>
+					<h2 class="section-title">Academic</h2>
+					<div class="paragraphs">
+						{aboutData.bio.map((line) => (
+							<p>{line}</p>
+						))}
+					</div>
+					<p class="interests-line">
+						<strong>Research interests:</strong>
+						<span>{aboutData.interests.join(", ")}</span>
+					</p>
+					<p class="more-info-line">
+						for more information Please visit 
+						<a href="https://research.tosania.top" target="_blank" rel="noopener noreferrer">
+							research.tosania.top
+						</a>
+					</p>
+				</section>
+
+				<section class="content-section" id="publications-section">
+					<h2 class="section-title">Publication</h2>
+					<p class="contact-note">
+						Please visit
+						<a href="/academic/publication/">Publication</a>
+					</p>
+				</section>
+
+				<section class="content-section" id="contact-section">
+					<h2 class="section-title">Contact</h2>
+					<p class="contact-note">{aboutData.contactNote}</p>
+				</section>
+			</section>
+		</div>
+	</div>
+</MainGridLayout>
+
+<style>
+	.about-replica {
+		overflow: hidden;
+		padding: 0;
+	}
+
+	.about-topbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.25rem;
+		border-bottom: 1px solid var(--line-divider);
+		padding: 1rem 1.4rem;
+	}
+
+	.site-title {
+		font-size: 1.02rem;
+		font-weight: 700;
+		color: #111111;
+	}
+
+	.about-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.4rem;
+	}
+
+	.about-nav a {
+		color: #222222;
+	}
+
+	.about-layout {
+		display: block;
+		padding: 1.5rem 1.4rem 2rem;
+	}
+
+	.name {
+		margin: 0 0 0.35rem;
+		font-size: 2rem;
+		line-height: 1.2;
+		font-weight: 700;
+		color: #111111;
+	}
+
+	.role,
+	.affiliation {
+		margin: 0 0 0.6rem;
+		color: #222222;
+	}
+
+	.content-section + .content-section {
+		margin-top: 2rem;
+	}
+
+	.section-title {
+		margin: 0 0 0.8rem;
+		font-size: 1.9rem;
+		font-weight: 700;
+		color: #111111;
+	}
+
+	.paragraphs p,
+	.interests-line,
+	.publication-item p,
+	.contact-note {
+		margin: 0 0 0.7rem;
+		color: #222222;
+		line-height: 1.8;
+	}
+
+	.more-info-line {
+		margin-top: 0.9rem;
+		color: #222222;
+	}
+
+	.publication-list {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.publication-item {
+		border-bottom: 1px solid var(--line-divider);
+		padding-bottom: 1rem;
+	}
+
+	.publication-title {
+		font-weight: 700;
+		color: #111111;
+	}
+
+	@media (max-width: 900px) {
+		.about-topbar {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>

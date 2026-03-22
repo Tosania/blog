@@ -1,0 +1,38 @@
+---
+import Markdown from "@/components/misc/Markdown.astro";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getRawSortedPosts } from "@/utils/content-utils";
+
+export const prerender = false;
+
+const authorized = Astro.cookies.get("hidden_mode")?.value === "1";
+
+if (!authorized) {
+	return Astro.redirect("/blog/hidden/");
+}
+
+const slugParam = Astro.params.slug;
+const slug = Array.isArray(slugParam)
+	? slugParam.join("/")
+	: (slugParam || "").replace(/^\/+|\/+$/g, "");
+
+const allHidden = await getRawSortedPosts("hidden");
+
+const post = allHidden.find((p) => p.slug.replace(/^\/+|\/+$/g, "") === slug);
+
+if (!post) {
+	throw new Error(`Hidden post not found: ${slug}`);
+}
+
+const { Content, headings } = await post.render();
+---
+
+<MainGridLayout title={post.data.title} description={post.data.description || post.data.title} headings={headings}>
+	<div class="card-base p-6 onload-animation">
+		<h1 class="text-90 text-3xl font-bold mb-4">{post.data.title}</h1>
+		<div class="text-50 mb-6">{new Date(post.data.published).toLocaleDateString("zh-CN")}</div>
+		<Markdown class="markdown-content">
+			<Content />
+		</Markdown>
+	</div>
+</MainGridLayout>

@@ -5,7 +5,7 @@ import "@fontsource/roboto/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import RecentPosts from "@components/widget/RecentPosts.astro";
-import { profileConfig, siteConfig } from "@/config";
+import { hiddenConfig, profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -111,7 +111,7 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, hiddenCommand: hiddenConfig.command}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
 			switch (theme) {
@@ -137,6 +137,13 @@ const bannerOffset =
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+
+			// hidden mode bootstrap
+			const hiddenEnabled = localStorage.getItem("hidden_mode_enabled") === "1";
+			if (hiddenEnabled) {
+				document.documentElement.classList.add("hidden-mode");
+				document.documentElement.classList.add("dark");
+			}
 		</script>
 		<style define:vars={{
 			configHue,
@@ -206,12 +213,16 @@ import {
 import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
+	AUTO_MODE,
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_HOME,
 	BANNER_HEIGHT_EXTEND,
+	DARK_MODE,
+	DEFAULT_THEME,
+	LIGHT_MODE,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT
 } from "../constants/constants";
-import { siteConfig } from '../config';
+import { hiddenConfig, siteConfig } from '../config';
 
 /* Preload fonts */
 // (async function() {
@@ -258,6 +269,131 @@ function disableAnimation() {
 */
 
 const bannerEnabled = !!document.getElementById('banner-wrapper')
+let hiddenToastTimer: number | undefined;
+
+function applyHiddenModeVisuals() {
+	const enabled = localStorage.getItem("hidden_mode_enabled") === "1";
+	document.documentElement.classList.toggle("hidden-mode", enabled);
+	if (enabled) {
+		document.documentElement.classList.add("dark");
+	}
+
+	const bannerImg = document.querySelector("#banner img");
+	if (bannerImg instanceof HTMLImageElement) {
+		if (!bannerImg.dataset.normalSrc) bannerImg.dataset.normalSrc = bannerImg.src;
+		bannerImg.src = enabled ? hiddenConfig.hiddenBanner : (bannerImg.dataset.normalSrc || bannerImg.src);
+	}
+
+	const avatarImg = document.querySelector("#profile-avatar img");
+	if (avatarImg instanceof HTMLImageElement) {
+		if (!avatarImg.dataset.normalSrc) avatarImg.dataset.normalSrc = avatarImg.src;
+		avatarImg.src = enabled ? hiddenConfig.hiddenAvatar : (avatarImg.dataset.normalSrc || avatarImg.src);
+	}
+
+	for (const a of document.querySelectorAll('a[href="/blog/"], a[href="/blog"]')) {
+		if (a instanceof HTMLAnchorElement) {
+			if (!a.dataset.normalHref) a.dataset.normalHref = a.getAttribute("href") || "/blog/";
+			if (enabled) {
+				a.href = "/blog/hidden/";
+			} else {
+				a.href = a.dataset.normalHref;
+			}
+		}
+	}
+
+	const path = window.location.pathname;
+	if (enabled && path.startsWith("/blog/") && !path.startsWith("/blog/hidden/")) {
+		window.location.replace("/blog/hidden/");
+	}
+	if (!enabled && path.startsWith("/blog/hidden/")) {
+		window.location.replace("/blog/");
+	}
+}
+
+async function syncHiddenModeCookie(enabled: boolean) {
+	try {
+		const resp = await fetch("/api/hidden-mode/", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ enabled }),
+		});
+		return resp.ok;
+	} catch (e) {
+		console.error("[hidden-mode] failed to sync cookie", e);
+		return false;
+	}
+}
+
+function showHiddenModeToast(enabled: boolean) {
+	let toast = document.getElementById("hidden-mode-toast");
+	if (!toast) {
+		toast = document.createElement("div");
+		toast.id = "hidden-mode-toast";
+		toast.className = "hidden-mode-toast";
+		toast.innerHTML = `
+			<div class="hidden-mode-toast__title"></div>
+			<div class="hidden-mode-toast__desc"></div>
+		`;
+		document.body.appendChild(toast);
+	}
+
+	const title = toast.querySelector(".hidden-mode-toast__title");
+	const desc = toast.querySelector(".hidden-mode-toast__desc");
+	if (title) {
+		title.textContent = enabled ? "Hidden Mode 已开启" : "Hidden Mode 已关闭";
+	}
+	if (desc) {
+		desc.textContent = enabled
+			? "已切换隐藏主题，Blog 入口已导向 /blog/hidden/"
+			: "已恢复常规模式与普通 Blog 入口";
+	}
+
+	toast.classList.add("show");
+	if (hiddenToastTimer) {
+		clearTimeout(hiddenToastTimer);
+	}
+	hiddenToastTimer = window.setTimeout(() => {
+		toast?.classList.remove("show");
+	}, 2200);
+}
+
+let hiddenTypingBuffer = "";
+const hiddenCommand = String(hiddenConfig.command || "yyc").toLowerCase();
+window.addEventListener("keydown", (e) => {
+	const target = e.target;
+	if (
+		target instanceof HTMLInputElement ||
+		target instanceof HTMLTextAreaElement ||
+		(target instanceof HTMLElement && target.isContentEditable)
+	) {
+		return;
+	}
+	if (e.key.length !== 1) return;
+	hiddenTypingBuffer = (hiddenTypingBuffer + e.key.toLowerCase()).slice(-hiddenCommand.length);
+	if (hiddenTypingBuffer === hiddenCommand) {
+		const nextEnabled = localStorage.getItem("hidden_mode_enabled") !== "1";
+		const prevTheme = localStorage.getItem("theme") || DEFAULT_THEME;
+		if (nextEnabled) {
+			localStorage.setItem("hidden_prev_theme", prevTheme);
+		} else {
+			const restoreTheme = localStorage.getItem("hidden_prev_theme") || DEFAULT_THEME;
+			if (restoreTheme === LIGHT_MODE || restoreTheme === DARK_MODE || restoreTheme === AUTO_MODE) {
+				localStorage.setItem("theme", restoreTheme);
+			} else {
+				localStorage.setItem("theme", DEFAULT_THEME);
+			}
+			setTheme(getStoredTheme());
+			localStorage.removeItem("hidden_prev_theme");
+		}
+
+		localStorage.setItem("hidden_mode_enabled", nextEnabled ? "1" : "0");
+		syncHiddenModeCookie(nextEnabled).finally(() => {
+			applyHiddenModeVisuals();
+			showHiddenModeToast(nextEnabled);
+		});
+		hiddenTypingBuffer = "";
+	}
+});
 
 function setClickOutsideToClose(panel: string, ignores: string[]) {
 	document.addEventListener("click", event => {
@@ -368,6 +504,7 @@ function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
 	loadHue();
+	applyHiddenModeVisuals();
 	initCustomScrollbar();
 	showBanner();
 }
@@ -433,6 +570,7 @@ const setup = () => {
 		if (heightExtend) {
 			heightExtend.classList.remove('hidden')
 		}
+		applyHiddenModeVisuals();
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {
@@ -566,3 +704,149 @@ if (window.swup) {
 	document.addEventListener("swup:enable", setup)
 }
 </script>
+
+<style is:global>
+	html.hidden-mode {
+		filter: saturate(0.85) contrast(0.95);
+	}
+
+	html.hidden-mode body {
+		background: radial-gradient(circle at top, rgba(26, 28, 36, 0.6), rgba(12, 14, 18, 0.95));
+	}
+
+	html.hidden-mode #banner-wrapper {
+		filter: brightness(0.72) contrast(1.12);
+	}
+
+	/* Hidden mode: keep interface focused on hidden content */
+	html.hidden-mode widget-layout[data-id="categories"],
+	html.hidden-mode widget-layout[data-id="tags"],
+	html.hidden-mode widget-layout[data-id="recent-posts"],
+	html.hidden-mode #toc-wrapper {
+		display: none !important;
+	}
+
+	html.hidden-mode a[href="/archive/"],
+	html.hidden-mode a[href="/academic/"],
+	html.hidden-mode a[href="/academic/publication/"],
+	html.hidden-mode a[href="/poems/"] {
+		opacity: 0.45;
+		filter: grayscale(0.4);
+	}
+
+	html.hidden-mode a[href="/about/"] {
+		opacity: 1 !important;
+		filter: none !important;
+		color: rgba(232, 241, 255, 0.98) !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+
+	/* disable blog category selector in hidden mode */
+	html.hidden-mode [data-nav-children="Blog"],
+	html.hidden-mode [data-nav-child-of="Blog"] {
+		display: none !important;
+	}
+
+	html.hidden-mode [data-nav-parent="Blog"] svg {
+		display: none !important;
+	}
+
+	/* Hidden mode: unify dark look for newly added pages and cards */
+	html.hidden-mode .card-base,
+	html.hidden-mode .btn-card,
+	html.hidden-mode .paper-card,
+	html.hidden-mode .about-replica,
+	html.hidden-mode .about-life .card-base {
+		background: linear-gradient(165deg, rgba(18, 22, 32, 0.96), rgba(12, 15, 22, 0.98)) !important;
+		border-color: rgba(169, 184, 255, 0.18) !important;
+		box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+	}
+
+	html.hidden-mode .text-90,
+	html.hidden-mode .paper-title,
+	html.hidden-mode .publication-title,
+	html.hidden-mode .name,
+	html.hidden-mode .section-title,
+	html.hidden-mode .site-title {
+		color: rgba(241, 246, 255, 0.96) !important;
+	}
+
+	html.hidden-mode .text-75,
+	html.hidden-mode .role,
+	html.hidden-mode .affiliation,
+	html.hidden-mode .paper-authors,
+	html.hidden-mode .paper-note,
+	html.hidden-mode .paper-meta,
+	html.hidden-mode .paper-abstract,
+	html.hidden-mode .paragraphs p,
+	html.hidden-mode .interests-line,
+	html.hidden-mode .contact-note,
+	html.hidden-mode .more-info-line,
+	html.hidden-mode .about-nav a {
+		color: rgba(206, 216, 242, 0.88) !important;
+	}
+
+	html.hidden-mode .paper-link {
+		background: rgba(39, 47, 67, 0.88) !important;
+		border-color: rgba(174, 192, 255, 0.24) !important;
+		color: rgba(235, 241, 255, 0.92) !important;
+	}
+
+	html.hidden-mode .badge-muted {
+		background: rgba(82, 90, 112, 0.65) !important;
+		color: rgba(235, 240, 252, 0.9) !important;
+	}
+
+	html.hidden-mode .badge-green {
+		background: rgba(46, 118, 88, 0.48) !important;
+		color: rgba(212, 255, 232, 0.95) !important;
+	}
+
+	.hidden-mode-toast {
+		position: fixed;
+		top: 5.5rem;
+		right: 1rem;
+		z-index: 80;
+		width: min(26rem, calc(100vw - 2rem));
+		padding: 0.8rem 1rem;
+		border-radius: 0.9rem;
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		background: linear-gradient(140deg, rgba(16, 18, 24, 0.92), rgba(11, 12, 16, 0.96));
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+		color: rgba(241, 245, 249, 0.96);
+		backdrop-filter: blur(8px);
+		transform: translateY(-0.6rem) scale(0.98);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 220ms ease, transform 260ms ease;
+	}
+
+	.hidden-mode-toast.show {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+
+	.hidden-mode-toast__title {
+		font-size: 0.95rem;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+	}
+
+	.hidden-mode-toast__desc {
+		margin-top: 0.25rem;
+		font-size: 0.8rem;
+		opacity: 0.8;
+		line-height: 1.45;
+	}
+
+	@media (max-width: 640px) {
+		.hidden-mode-toast {
+			top: auto;
+			bottom: 1rem;
+			right: 0.75rem;
+			left: 0.75rem;
+			width: auto;
+		}
+	}
+</style>

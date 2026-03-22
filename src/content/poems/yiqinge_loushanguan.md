@@ -19,7 +19,3 @@ creationText: 1935年二月
 
 
 
-<video width="640
-" height="240" controls>
-    <source src="/video/yiqinge_loushanguan.mp4" type="video/mp4">
-</video>

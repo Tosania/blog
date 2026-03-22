@@ -54,6 +54,7 @@ export type NavBarLink = {
 	name: string;
 	url: string;
 	external?: boolean;
+	children?: NavBarLink[];
 };
 
 export type NavBarConfig = {
@@ -88,6 +89,7 @@ export type BlogPostData = {
 	published: Date;
 	description: string;
 	tags: string[];
+	section?: "research" | "tech" | "life" | "hidden";
 	draft?: boolean;
 	image?: string;
 	category?: string;

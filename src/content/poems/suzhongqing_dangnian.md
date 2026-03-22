@@ -19,7 +19,3 @@ creationText: 宋孝宗淳熙八年（1181）至淳熙十二年（1185）间
 
 此生谁料，心在天山，身老沧州。
 
-<video width="640
-" height="240" controls>
-    <source src="/video/suzhongqing_dangnian.mp4" type="video/mp4">
-</video>

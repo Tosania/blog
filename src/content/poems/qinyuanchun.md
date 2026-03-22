@@ -12,7 +12,3 @@ creationText: 一九二五年
 
 携来百侣曾游。忆往昔峥嵘岁月稠。恰同学少年，风华正茂；书生意气，挥斥方遒。指点江山，激扬文字，粪土当年万户侯。曾记否，到中流击水，浪遏飞舟?
 
-<video width="640
-" height="240" controls>
-    <source src="/video/qingyuanchun.mp4" type="video/mp4">
-</video>
