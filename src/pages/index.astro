@@ -20,6 +20,7 @@ function summarize(text: string, max = 120) {
 }
 
 const posts = await getRawSortedPosts("all-public");
+const allPublishedPosts = await getCollection("posts", ({ data }) => !data.draft);
 const poems = (await getCollection("poems", ({ data }) => !data.draft)).sort(
 	(a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
 );
@@ -28,12 +29,13 @@ const aboutEntry = await getEntry("spec", "about");
 const allEntries = [...posts, ...poems];
 const totalWords = allEntries.reduce((acc, entry) => acc + estimateWordCount(entry.body || ""), 0);
 
-const latestDate = allEntries.reduce((latest, entry) => {
+const latestDateSources = [...allPublishedPosts, ...poems];
+const latestDate = latestDateSources.reduce((latest, entry) => {
 	const d = new Date(entry.data.updated ?? entry.data.published);
 	return d > latest ? d : latest;
 }, new Date("2024-01-01"));
 
-const launchDate = new Date("2024-06-16");
+const launchDate = new Date("2025-10-01");
 const daysOnline = Math.max(
 	1,
 	Math.ceil((Date.now() - launchDate.getTime()) / (1000 * 60 * 60 * 24)),
@@ -53,36 +55,48 @@ const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。"
 	<div class="portal portal-default">
 		<section class="card-base card-shadow hero onload-animation">
 			<div>
-				<h1 class="text-90 mt-1 text-4xl font-bold">{profileConfig.name}</h1>
+				<h1 class="text-90 mt-1 text-4xl font-bold">Tosania's Homepage</h1>
 				<p class="text-75 mt-2 leading-8">
-					欢迎来到我的个人站点。我现在主要聚焦在具身智能与机器人方向，平时会记录研究想法、
-					项目复盘，以及一些生活观察。这里既是持续更新的学习档案，也希望成为一个能被反复回看的长期空间。
+					欢迎来到我的个人博客。我现在是一名正在攻读工科学士学位的学生，这个博客将记录我在学术和生活上的一些所感所想，也会分享一些技术相关的内容。如果想要联系我，请邮箱Tosania@163.com。
 				</p>
 			</div>
 		</section>
 
 		<section class="grid gap-4 md:grid-cols-2 onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
 			<article class="card-base p-6">
-				<h2 class="text-90 text-2xl font-bold">学术介绍页面</h2>
-				<div class="text-75 mt-3 leading-8">{aboutSummary}</div>
+				<h2 class="text-90 text-2xl font-bold">Academic</h2>
+				<div class="text-75 mt-3 leading-8">我目前的研究方向主要集中在具身智能/机器人/人工智能等大方向，计划将于2027年开始攻读博士学位，目前主要的研究兴趣包括机器人的分层可解释框架/混合控制/超自由度机器人控制等等，如果你有想和我交流的也可以通过邮箱联系我！下方附上我的个人主页</div>
 				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/academic/">
 					进入 Academic 查看完整学术介绍
 				</a>
 			</article>
 
 			<article class="card-base p-6">
-				<h2 class="text-90 text-2xl font-bold">生活介绍页面</h2>
+				<h2 class="text-90 text-2xl font-bold">Life</h2>
 				<div class="text-75 mt-3 leading-8">
-					这一页聚焦日常记录与阶段性思考，包括校园生活、个人体验和长期计划。
-					如果你更想先从轻松内容开始，可以从这里进入生活类文章。
+					本blog也会分享一些我的生活相关内容，包括但不限于我的游戏爱好，阅读爱好已经其他方面的内容，详细内容请看about页面：
 				</div>
-				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/blog/category/life/">
-					进入生活类 Blog
+				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/about/">
+					进入 About 查看完整生活介绍
 				</a>
 			</article>
 		</section>
 
-		<section class="onload-animation" style="animation-delay: calc(var(--content-delay) + 160ms)">
+		<section class="onload-animation" style="animation-delay: calc(var(--content-delay) + 140ms)">
+			<div class="card-base p-6">
+				<h2 class="text-90 text-2xl font-bold">Now</h2>
+				<div class="text-75 mt-3 leading-8">
+					我现在主要在准备一篇关于软体机器人控制方向的论文投稿，同时正在推进我的博士申请以及未来的实习相关的研究，并补习机器人相关的课程。如果你最近相同的经历，可以加入我的交流群1090856800。
+				</div>
+				<div class="now-tags mt-4">
+					<span class="now-tag">Soft Robotics</span>
+					<span class="now-tag">Embodied AI</span>
+					<span class="now-tag">PhD Applying</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="onload-animation" style="animation-delay: calc(var(--content-delay) + 200ms)">
 			<div class="card-base p-6">
 				<h2 class="text-90 text-2xl font-bold">Statistics</h2>
 				<div class="stats mt-4">
@@ -166,6 +180,23 @@ const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。"
 		display: grid;
 		gap: 0.75rem;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.now-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.now-tag {
+		display: inline-flex;
+		align-items: center;
+		border-radius: 999px;
+		padding: 0.25rem 0.7rem;
+		font-size: 0.82rem;
+		background: var(--btn-regular-bg);
+		color: var(--btn-content);
+		border: 1px solid var(--line-divider);
 	}
 
 	@media (max-width: 900px) {
