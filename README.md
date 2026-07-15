@@ -51,6 +51,24 @@
 
 ## 使用说明（当前版本）
 
+### 本地预览（支持 Windows / Ubuntu）
+在项目根目录执行：
+
+```bash
+pnpm run local-preview
+```
+
+然后选择：
+- `1` 启动网页预览（Astro dev，`http://127.0.0.1:4321/`）
+- `2` 启动编辑页面预览（Post Studio，`http://127.0.0.1:4312/`）
+
+也可以直接带参数启动：
+
+```bash
+pnpm run local-preview 1
+pnpm run local-preview 2
+```
+
 ### 标记隐藏文章
 在文章 frontmatter 中添加：
 
