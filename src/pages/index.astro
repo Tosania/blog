@@ -20,14 +20,21 @@ function summarize(text: string, max = 120) {
 }
 
 const posts = await getRawSortedPosts("all-public");
-const allPublishedPosts = await getCollection("posts", ({ data }) => !data.draft);
+const allPublishedPosts = await getCollection(
+	"posts",
+	({ data }) => !data.draft,
+);
 const poems = (await getCollection("poems", ({ data }) => !data.draft)).sort(
-	(a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
+	(a, b) =>
+		new Date(b.data.published).getTime() - new Date(a.data.published).getTime(),
 );
 const aboutEntry = await getEntry("spec", "about");
 
 const allEntries = [...posts, ...poems];
-const totalWords = allEntries.reduce((acc, entry) => acc + estimateWordCount(entry.body || ""), 0);
+const totalWords = allEntries.reduce(
+	(acc, entry) => acc + estimateWordCount(entry.body || ""),
+	0,
+);
 
 const latestDateSources = [...allPublishedPosts, ...poems];
 const latestDate = latestDateSources.reduce((latest, entry) => {
@@ -47,7 +54,8 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
 	year: "numeric",
 }).format(latestDate);
 
-const wordsDisplay = totalWords > 10000 ? `${(totalWords / 10000).toFixed(1)}w` : `${totalWords}`;
+const wordsDisplay =
+	totalWords > 10000 ? `${(totalWords / 10000).toFixed(1)}w` : `${totalWords}`;
 const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。");
 ---
 
@@ -57,7 +65,7 @@ const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。"
 			<div>
 				<h1 class="text-90 mt-1 text-4xl font-bold">Tosania's Homepage</h1>
 				<p class="text-75 mt-2 leading-8">
-					欢迎来到我的个人博客。我现在是一名正在攻读工科学士学位的学生，这个博客将记录我在学术和生活上的一些所感所想，也会分享一些技术相关的内容。如果想要联系我，请邮箱Tosania@163.com。
+					欢迎来到我的个人博客。我现在是一名南京大学智能科学学院研零的学生，这个博客将记录我在学术和生活上的一些所感所想，也会分享一些技术相关的内容。如果想要联系我，请邮箱Tosania@163.com。
 				</p>
 			</div>
 		</section>
@@ -65,8 +73,13 @@ const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。"
 		<section class="grid gap-4 md:grid-cols-2 onload-animation" style="animation-delay: calc(var(--content-delay) + 80ms)">
 			<article class="card-base p-6">
 				<h2 class="text-90 text-2xl font-bold">Academic</h2>
-				<div class="text-75 mt-3 leading-8">我目前的研究方向主要集中在具身智能/机器人/人工智能等大方向，计划将于2027年开始攻读博士学位，目前主要的研究兴趣包括机器人的分层可解释框架/混合控制/超自由度机器人控制等等，如果你有想和我交流的也可以通过邮箱联系我！下方附上我的个人主页</div>
-				<a class="text-50 mt-3 inline-block link-underline text-sm" href="/academic/">
+				<div class="text-75 mt-3 leading-8">我目前的研究方向主要集中在具身智能方向，具体主要集中在Agentic Robotics以及Whole-Body Control上，曾经也做过Soft robotics相关的研究，将于2027年开始攻读硕士学位，如果你有想和我交流的也可以通过邮箱联系我！下方附上我的个人主页</div>
+				<a
+					class="text-50 mt-3 inline-block link-underline text-sm"
+					href="https://research.tosania.top/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
 					进入 Academic 查看完整学术介绍
 				</a>
 			</article>
@@ -86,12 +99,11 @@ const aboutSummary = summarize(aboutEntry?.body || "欢迎来到我的主页。"
 			<div class="card-base p-6">
 				<h2 class="text-90 text-2xl font-bold">Now</h2>
 				<div class="text-75 mt-3 leading-8">
-					我现在主要在准备一篇关于软体机器人控制方向的论文投稿，同时正在推进我的博士申请以及未来的实习相关的研究，并补习机器人相关的课程。如果你最近相同的经历，可以加入我的交流群1090856800。
+					我刚刚完成了保研相关的内容，目前我正在推进我本科已有的两篇软体方向的工作，同时我正在准备进入具身方向，目前重心会偏向运动控制，包括但不限于Whole-Body Control，loco-manipulation。
 				</div>
 				<div class="now-tags mt-4">
 					<span class="now-tag">Soft Robotics</span>
 					<span class="now-tag">Embodied AI</span>
-					<span class="now-tag">PhD Applying</span>
 				</div>
 			</div>
 		</section>

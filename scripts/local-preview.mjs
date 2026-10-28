@@ -15,7 +15,7 @@ const MODES = {
 		label: "网页预览 (Astro dev)",
 		url: "http://127.0.0.1:4321/",
 		script: "dev",
-		args: ["--", "--host", "127.0.0.1", "--port", "4321"],
+		args: ["--host", "127.0.0.1", "--port", "4321"],
 	},
 	"2": {
 		label: "编辑页面预览 (Post Studio)",
@@ -68,14 +68,17 @@ function runMode(modeKey) {
 	console.log(`正在启动${mode.label}...`);
 	console.log(`访问地址: ${mode.url}`);
 
-	const child = spawn(
-		executable,
-		["run", mode.script, ...mode.args],
-		{
-			cwd: ROOT_DIR,
-			stdio: "inherit",
-		},
-	);
+	const scriptArgs = ["run", mode.script, ...mode.args];
+
+	// Node 20.12 起禁止直接 spawn .cmd/.bat（会抛 EINVAL），Windows 下改由 cmd.exe 执行
+	const command = platform === "win32" ? process.env.ComSpec || "cmd.exe" : executable;
+	const commandArgs =
+		platform === "win32" ? ["/d", "/s", "/c", [executable, ...scriptArgs].join(" ")] : scriptArgs;
+
+	const child = spawn(command, commandArgs, {
+		cwd: ROOT_DIR,
+		stdio: "inherit",
+	});
 
 	child.on("exit", (code, signal) => {
 		if (signal) {
